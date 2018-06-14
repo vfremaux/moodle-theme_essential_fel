@@ -62,7 +62,6 @@ if (@$config->customscrollbars) {
 
 $THEME->sheets[] = 'fixes';
 $THEME->sheets[] = 'overrides';
-$THEME->sheets[] = 'customlabels';
 $THEME->sheets[] = 'custom';
 
 if (!empty(@$config->additionalcsssheets)) {
@@ -88,6 +87,7 @@ $fpaddregions = array();
 if (!function_exists('core_tables_exist')) {
     require_once($CFG->dirroot.'/lib/upgradelib.php');
 }
+
 
 if (@$config->frontpagemiddleblocks > 0) {
     $fpaddregions[] = 'home';

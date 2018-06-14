@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $plugin->version = 2018030200; // YYYYMMDDVV.
 $plugin->maturity = MATURITY_STABLE; // This version's maturity level.
-$plugin->release = '3.5.0 (Build: 2016061713)';
+$plugin->release = '3.4.0 (Build: 2016061713)';
 $plugin->requires  = 2017110800; // 3.4 (Build: 20160523).
 $plugin->component = 'theme_essential_fel';
 $plugin->dependencies = array(
@@ -37,4 +37,4 @@ $plugin->dependencies = array(
 );
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.5.0000';
+$plugin->codeincrement = '3.4.0000';
