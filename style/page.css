@@ -1,0 +1,12 @@
+#format-page-content {
+    margin-top:8px;
+}
+
+#format-page-editing-block, 
+#format-page-editing-block * {
+    font-size:11px;
+}
+
+.format-page-action-cell {
+    padding:2px;
+}
