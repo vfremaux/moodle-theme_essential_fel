@@ -25,16 +25,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+require_once($CFG->dirroot . "/course/format/topics/renderer.php");
 
-$plugin->version = 2018030200; // YYYYMMDDVV.
-$plugin->maturity = MATURITY_STABLE; // This version's maturity level.
-$plugin->release = '3.5.0 (Build: 2016061713)';
-$plugin->requires  = 2017110800; // 3.4 (Build: 20160523).
-$plugin->component = 'theme_essential_fel';
-$plugin->dependencies = array(
-    'theme_bootstrapbase'  => 2016052300
-);
-
-// Non moodle attributes.
-$plugin->codeincrement = '3.5.0000';
+class theme_essential_fel_format_topics_renderer extends format_topics_renderer {
+    use \theme_essential_fel\format_renderer_toolbox;
+}

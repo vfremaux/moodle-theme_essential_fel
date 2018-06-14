@@ -223,11 +223,11 @@ class theme_essential_fel_format_flexsections_renderer extends format_flexsectio
         if (@$userstates[$section->id] == FORMAT_FLEXSECTIONS_EXPANDED) {
             $text = new lang_string('showcollapsed', 'format_flexsections');
             $class = 'expanded flexcontrol level-'.$level;
-            $src = $this->output->pix_url('t/expanded');
+            $src = $this->output->image_url('t/expanded');
         } else {
             $text = new lang_string('showexpanded', 'format_flexsections');
             $class = 'collapsed flexcontrol level-'.$level;
-            $src = $this->output->pix_url('t/collapsed');
+            $src = $this->output->image_url('t/collapsed');
         }
         $attrs = array('src' => $src,
                        'class' => $class,

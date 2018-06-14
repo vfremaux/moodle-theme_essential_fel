@@ -968,3 +968,5 @@ $string['returntoquiz'] = 'Back to quiz';
 $string['returntotraining'] = 'Back to training';
 $string['questionreference'] = 'Question reference';
 $string['questioncategory'] = 'Question category';
+
+$string['unreadnewmessages'] = 'You have {$a} unread messages';

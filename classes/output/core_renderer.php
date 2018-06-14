@@ -73,6 +73,9 @@ class core_renderer extends \core_renderer {
      * @return string $breadcrumbs
      */
     public function navbar() {
+        if (optional_param('optimized', false, PARAM_BOOL)) {
+            return;
+        }
         $breadcrumbstyle = self::get_local_setting('breadcrumbstyle');
         if ($breadcrumbstyle) {
             if ($breadcrumbstyle == '4') {
@@ -212,7 +215,7 @@ class core_renderer extends \core_renderer {
 
         // Prepare return to course button.
 
-        $returnablemodules = array('resource', 'forum', 'page', 'folder');
+        $returnablemodules = array('resource', 'forum', 'page', 'folder', 'quiz');
         $pagetypeexceptions = array('page-mod-quiz-attempt');
 
         $button = '';
@@ -1046,7 +1049,7 @@ class core_renderer extends \core_renderer {
                         $branch->add($icon.$modfullname, new moodle_url('/course/resources.php',
                             array('id' => $this->page->course->id)));
                     } else {
-                        $icon = '<img src="'.$this->pix_url('icon', $modname) . '" class="icon" alt="" />';
+                        $icon = '<img src="'.$this->image_url('icon', $modname) . '" class="icon" alt="" />';
                         $branch->add($icon.$modfullname, new moodle_url('/mod/'.$modname.'/index.php',
                             array('id' => $this->page->course->id)));
                     }
@@ -1128,7 +1131,7 @@ class core_renderer extends \core_renderer {
             } else {
                 $messagemenuicon = $this->getfontawesomemarkup('envelope');
             }
-            $messagetitle = get_string('unreadmessages', 'message', $messages['newmessages']);
+            $messagetitle = get_string('unreadnewmessages', 'theme_essential_fel', $messages['newmessages']);
 
             $messagemenutext = html_writer::tag('span', $messages['newmessages']) . $messagemenuicon;
             $messagesubmenu = $messagemenu->add(
@@ -1566,7 +1569,7 @@ class core_renderer extends \core_renderer {
 
             // Check if messaging is enabled.
             if (!empty($CFG->messaging)) {
-                $branchlabel = '<em>'.$this->getfontawesomemarkup('envelope').get_string('pluginname', 'block_messages').'</em>';
+                $branchlabel = '<em>'.$this->getfontawesomemarkup('envelope').get_string('messages', 'message').'</em>';
                 $branchurl = new moodle_url('/message/index.php');
                 $usermenu .= html_writer::tag('li', html_writer::link($branchurl, $branchlabel));
             }
@@ -2468,6 +2471,7 @@ class core_renderer extends \core_renderer {
         global $CFG;
         $result = '';
 
+        /*
         if (($CFG->version < 2016052300.00) || ($CFG->version >= 2016111400.00)) {
             $result = '<div class="useralerts alert alert-error">';
             $result .= '<a class="close" data-dismiss="alert" href="#">'.$this->getfontawesomemarkup('times-circle').'</a>';
@@ -2478,6 +2482,7 @@ class core_renderer extends \core_renderer {
                 get_string('versionalerttext2', 'theme_essential_fel');
             $result .= '</div>';
         }
+        */
 
         return $result;
     }
@@ -2490,7 +2495,7 @@ class core_renderer extends \core_renderer {
         $favicon = self::get_local_setting('favicon', 'format_file_url');
 
         if (empty($favicon)) {
-            return $this->page->theme->pix_url('favicon', 'theme');
+            return $this->page->theme->image_url('favicon', 'theme');
         } else {
             return $favicon;
         }

@@ -66,7 +66,7 @@ $THEME->sheets[] = 'customlabels';
 $THEME->sheets[] = 'custom';
 
 if (!empty(@$config->additionalcsssheets)) {
-    $sheets = explode(',', $config->additionalcsssheets);
+    $sheets = explode(',', @$config->additionalcsssheets);
     foreach ($sheets as $sheet) {
         $THEME->sheets[] = $sheet;
     }

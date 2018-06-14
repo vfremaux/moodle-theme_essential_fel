@@ -39,6 +39,6 @@ define(['jquery', 'core/log'], function($, log) {
                 }
             });
         }
-    }
+    };
 });
 /* jshint ignore:end */

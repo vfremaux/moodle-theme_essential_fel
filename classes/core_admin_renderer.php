@@ -4,10 +4,10 @@ require_once($CFG->dirroot.'/admin/renderer.php');
 
 class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
 
-    function admin_notifications_page($maturity, $insecuredataroot, $errorsdisplayed, $cronoverdue, $dbproblems,
-                                      $maintenancemode, $availableupdates, $availableupdatesfetch, $buggyiconvnomb,
-                                      $registered, array $cachewarnings = Array(), $eventshandlers = 0,
-                                      $ignored = false, $devlibdir = false) {
+    function admin_notifications_page($maturity, $insecuredataroot, $errorsdisplayed,
+        $cronoverdue, $dbproblems, $maintenancemode, $availableupdates, $availableupdatesfetch, $buggyiconvnomb,
+        $registered, array $cachewarnings = array(), $eventhandlers = 0, $themedesignermode = false, $devlibdir = false,
+        $mobileconfigured = false, $overridetossl = false, $invalidforgottenpasswordurl = false) {
         global $OUTPUT, $CFG;
 
         $str = '';
@@ -19,18 +19,18 @@ class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
         $str .= $OUTPUT->heading(get_string('users'));
         $str .= '<div id="admin-user-management">';
         $usersurl = new moodle_url('/admin/user.php');
-        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('users').'"><img src="'.$OUTPUT->pix_url('a/users', 'theme').'"></a>';
+        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('users').'"><img src="'.$OUTPUT->image_url('a/users', 'theme').'"></a>';
 
         $usersurl = new moodle_url('/admin/tool/uploaduser/index.php');
-        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('uploadusers', 'theme_essential_fel').'"><img src="'.$OUTPUT->pix_url('a/importusers', 'theme').'"></a>';
+        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('uploadusers', 'theme_essential_fel').'"><img src="'.$OUTPUT->image_url('a/importusers', 'theme').'"></a>';
 
         $usersurl = new moodle_url('/user/editadvanced.php?id=-1');
-        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('adduser', 'theme_essential_fel').'"><img src="'.$OUTPUT->pix_url('a/adduser', 'theme').'"></a>';
+        $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('adduser', 'theme_essential_fel').'"><img src="'.$OUTPUT->image_url('a/adduser', 'theme').'"></a>';
 
         if (file_exists($CFG->dirroot.'/admin/tool/userldapinvite/invite.php')) {
             if (is_enabled_auth('ldap')) {
                 $usersurl = new moodle_url('/admin/tool/userldapinvite/invite.php');
-                $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('inviteuser', 'tool_userldapinvite').'"><img src="'.$OUTPUT->pix_url('a/inviteuser', 'theme').'"></a>';
+                $str .= '<a href="'.$usersurl.'" class="admin-flat-button" title="'.get_string('inviteuser', 'tool_userldapinvite').'"><img src="'.$OUTPUT->image_url('a/inviteuser', 'theme').'"></a>';
             }
         }
 
@@ -40,11 +40,11 @@ class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
         $str .= '<div id="admin-cohort-management">';
 
         $cohorturl = new moodle_url('/cohort/index.php');
-        $str .= '<a href="'.$cohorturl.'" class="admin-flat-button" title="'.get_string('cohorts', 'cohort').'"><img src="'.$OUTPUT->pix_url('a/cohorts', 'theme').'"></a>';
+        $str .= '<a href="'.$cohorturl.'" class="admin-flat-button" title="'.get_string('cohorts', 'cohort').'"><img src="'.$OUTPUT->image_url('a/cohorts', 'theme').'"></a>';
 
         if (file_exists($CFG->dirroot.'/enrol/delayedcohort/planner.php')) {
             $cohorturl = new moodle_url('/enrol/delayedcohort/planner.php', array('view' => 'bycohort'));
-            $str .= '<a href="'.$cohorturl.'" class="admin-flat-button" title="'.get_string('planner', 'enrol_delayedcohort').'"><img src="'.$OUTPUT->pix_url('a/cohortplanning', 'theme').'"></a>';
+            $str .= '<a href="'.$cohorturl.'" class="admin-flat-button" title="'.get_string('planner', 'enrol_delayedcohort').'"><img src="'.$OUTPUT->image_url('a/cohortplanning', 'theme').'"></a>';
         }
 
         $str .= '</div>';
@@ -52,13 +52,13 @@ class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
         $str .= $OUTPUT->heading(get_string('roles'));
         $str .= '<div id="admin-roles-management">';
         $rolesurl = new moodle_url('/admin/roles/manage.php');
-        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('defineroles', 'role').'"><img src="'.$OUTPUT->pix_url('a/roles', 'theme').'"></a>';
+        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('defineroles', 'role').'"><img src="'.$OUTPUT->image_url('a/roles', 'theme').'"></a>';
 
         $rolesurl = new moodle_url('/admin/roles/check.php?contextid=1');
-        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('checkglobalpermissions', 'role').'"><img src="'.$OUTPUT->pix_url('a/permissions', 'theme').'"></a>';
+        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('checkglobalpermissions', 'role').'"><img src="'.$OUTPUT->image_url('a/permissions', 'theme').'"></a>';
 
         $rolesurl = new moodle_url('/admin/roles/check.php?contextid=1');
-        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('assignglobalroles', 'role').'"><img src="'.$OUTPUT->pix_url('a/assignsiteroles', 'theme').'"></a>';
+        $str .= '<a href="'.$rolesurl.'" class="admin-flat-button" title="'.get_string('assignglobalroles', 'role').'"><img src="'.$OUTPUT->image_url('a/assignsiteroles', 'theme').'"></a>';
 
         $str .= '</div>';
 
@@ -66,7 +66,7 @@ class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
         $str .= '<div id="admin-course-management">';
 
         $courseurl = new moodle_url('/course/management.php');
-        $str .= '<a href="'.$courseurl.'" class="admin-flat-button" title="'.get_string('courses').'"><img src="'.$OUTPUT->pix_url('a/courses', 'theme').'"></a>';
+        $str .= '<a href="'.$courseurl.'" class="admin-flat-button" title="'.get_string('courses').'"><img src="'.$OUTPUT->image_url('a/courses', 'theme').'"></a>';
 
         $str .= '</div>';
 
@@ -74,7 +74,7 @@ class theme_essential_fel_core_admin_renderer extends core_admin_renderer {
         $str .= '<div id="admin-technical-management">';
 
         $courseurl = new moodle_url('/admin/purgecaches.php');
-        $str .= '<a href="'.$courseurl.'" class="admin-flat-button" title="'.get_string('purgecaches', 'admin').'"><img src="'.$OUTPUT->pix_url('a/purgecaches', 'theme').'"></a>';
+        $str .= '<a href="'.$courseurl.'" class="admin-flat-button" title="'.get_string('purgecaches', 'admin').'"><img src="'.$OUTPUT->image_url('a/purgecaches', 'theme').'"></a>';
 
         $str .= '</div>';
 

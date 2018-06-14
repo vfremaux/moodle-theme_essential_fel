@@ -27,22 +27,22 @@
 if (\theme_essential_fel\toolbox::get_setting('iphoneicon')) {
     $iphoneicon = \theme_essential_fel\toolbox::get_setting('iphoneicon', 'format_file_url');
 } else {
-    $iphoneicon = $OUTPUT->pix_url('homeicon/iphone', 'theme');
+    $iphoneicon = $OUTPUT->image_url('homeicon/iphone', 'theme');
 }
 if (\theme_essential_fel\toolbox::get_setting('ipadicon')) {
     $ipadicon = \theme_essential_fel\toolbox::get_setting('ipadicon', 'format_file_url');
 } else {
-    $ipadicon = $OUTPUT->pix_url('homeicon/ipad', 'theme');
+    $ipadicon = $OUTPUT->image_url('homeicon/ipad', 'theme');
 }
 if (\theme_essential_fel\toolbox::get_setting('iphoneretinaicon')) {
     $iphoneretinaicon = \theme_essential_fel\toolbox::get_setting('iphoneretinaicon', 'format_file_url');
 } else {
-    $iphoneretinaicon = $OUTPUT->pix_url('homeicon/iphone_retina', 'theme');
+    $iphoneretinaicon = $OUTPUT->image_url('homeicon/iphone_retina', 'theme');
 }
 if (\theme_essential_fel\toolbox::get_setting('ipadretinaicon')) {
     $ipadretinaicon = \theme_essential_fel\toolbox::get_setting('ipadretinaicon', 'format_file_url');
 } else {
-    $ipadretinaicon = $OUTPUT->pix_url('homeicon/ipad_retina', 'theme');
+    $ipadretinaicon = $OUTPUT->image_url('homeicon/ipad_retina', 'theme');
 }
 ?>
 

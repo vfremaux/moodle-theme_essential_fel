@@ -29,6 +29,6 @@ define(['jquery', 'core/log'], function($, log) {
             });
             log.debug('Essential header AMD init');
         }
-    }
+    };
 });
 /* jshint ignore:end */

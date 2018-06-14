@@ -2548,7 +2548,6 @@ if ($ADMIN->fulltree) {
     $desc = get_string('modfixedthumbwidthdesc', 'theme_essential_fel');
     $default = '';
     $setting = new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $essential_felsettingsextras->add($setting);
 
     // Flex section style list.

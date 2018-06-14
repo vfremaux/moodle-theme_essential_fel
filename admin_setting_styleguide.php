@@ -7110,7 +7110,7 @@ class essential_fel_admin_setting_styleguide extends admin_setting {
         $return .= '</ol>';
         $return .= '<div class="carousel-inner">';
         $return .= '<div class="item active">';
-        $return .= '<img src="'.$OUTPUT->pix_url('screenshot', 'theme').'" alt="">';
+        $return .= '<img src="'.$OUTPUT->image_url('screenshot', 'theme').'" alt="">';
         $return .= '<div class="carousel-caption">';
         $return .= '<h4>First Thumbnail label</h4>';
         $return .= '<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida ';
@@ -7118,7 +7118,7 @@ class essential_fel_admin_setting_styleguide extends admin_setting {
         $return .= '</div>';
         $return .= '</div>';
         $return .= '<div class="item">';
-        $return .= '<img src="'.$OUTPUT->pix_url('screenshot', 'theme').'" alt="">';
+        $return .= '<img src="'.$OUTPUT->image_url('screenshot', 'theme').'" alt="">';
         $return .= '<div class="carousel-caption">';
         $return .= '<h4>Second Thumbnail label</h4>';
         $return .= '<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida ';
@@ -7126,7 +7126,7 @@ class essential_fel_admin_setting_styleguide extends admin_setting {
         $return .= '</div>';
         $return .= '</div>';
         $return .= '<div class="item">';
-        $return .= '<img src="'.$OUTPUT->pix_url('screenshot', 'theme').'" alt="">';
+        $return .= '<img src="'.$OUTPUT->image_url('screenshot', 'theme').'" alt="">';
         $return .= '<div class="carousel-caption">';
         $return .= '<h4>Third Thumbnail label</h4>';
         $return .= '<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida ';

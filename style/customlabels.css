@@ -862,9 +862,8 @@ td.custombox-header-caption.instructions {
 /* Keypoints */
 
 #page-region-main td.custombox-header-thumb.keypoints,
-#region-main td.custombox-header-thumb.keypoints {
-    /* background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; */
-    background-image: url("/mod/customlabel/pluginicon.php?shape=circle&type=keypoints") !important;
+#region-main td.custombox-header-thumb.keypoints{
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -886,8 +885,7 @@ td.custombox-header-thumb.keypoints:after {
 #region-pre td.custombox-header-thumb.keypoints,
 #region-post td.custombox-header-thumb.keypoints,
 #page-region-post td.custombox-header-thumb.keypoints{
-    /* background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; */
-    background-image: url("/mod/customlabel/pluginicon.php?shape=circle&type=keypoints&stroke=orange") !important;
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-size:50%;
     background-position: 20% 0%;
     background-repeat: no-repeat;

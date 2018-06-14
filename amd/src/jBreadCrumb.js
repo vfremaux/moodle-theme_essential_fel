@@ -10,6 +10,7 @@
  *
  */
 
+/* eslint-disable */
 /* jshint ignore:start */
 define(['jquery', 'core/log'], function($, log) {
 

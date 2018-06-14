@@ -133,9 +133,9 @@ class toolbox {
         return $us->setting_file_url($setting, $filearea);
     }
 
-    static public function pix_url($imagename, $component) {
+    static public function image_url($imagename, $component) {
         $us = self::check_corerenderer();
-        return $us->pix_url($imagename, $component);
+        return $us->image_url($imagename, $component);
     }
 
     /**
@@ -317,7 +317,7 @@ class toolbox {
         if ($slideimage) {
             $slideimage = self::setting_file_url('slide'.$slideno.'image', 'slide'.$slideno.'image');
         } else {
-            $slideimage = self::pix_url('default_slide', 'theme');
+            $slideimage = self::image_url('default_slide', 'theme');
         }
 
         if ($slideurl) {
@@ -608,7 +608,7 @@ class toolbox {
         if ($headerbackground) {
             $replacement .= $headerbackground;
         } else {
-            $replacement .= self::pix_url('bg/header', 'theme');
+            $replacement .= self::image_url('bg/header', 'theme');
             $headerbackgroundstyle = 'tiled';
         }
         $replacement .= '\');';

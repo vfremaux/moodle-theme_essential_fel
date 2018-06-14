@@ -59,3 +59,12 @@
 #page-login-index #page-header {
     border-bottom: none;
 }
+
+.initialbar * {
+    display: inline;
+}
+
+#notice {
+    width: initial;
+    margin:initial;
+}
