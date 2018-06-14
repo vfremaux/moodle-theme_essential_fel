@@ -1,0 +1,57 @@
+/* Addition for per module illustation */
+
+.section .activity .activityinstance, .section .activity .activityinstance div.cm-name {
+    display:table-row;
+}
+
+.section .activity .activityinstance, .section .activity .activityinstance div.cm-picture,
+.section .activity .activityinstance, .section .activity .activityinstance div.cm-label {
+    display:table-cell;
+}
+
+.cm-name {
+    width:100%;
+    vertical-align: top;
+    display:table;
+}
+
+.cm-picture {
+    width:40%;
+    padding-right: 10px;
+    vertical-align: top;
+    display:table-cell;
+}
+
+.cm-label {
+    width:60%;
+    vertical-align: top;
+    display:table-cell;
+}
+
+/* Retourn to course button */
+
+.return-button {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.flexsectionstyle-sample {
+    border: dashed 1px #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+}
+
+.flexsectionstyle-sample .sample-label {
+    color: #ccc;
+    font-size: 0.8em;
+}
+
+div.content.highlight {
+    background-color:#f8f8ff;
+}
+
+.flexsections > .main > .content > .sectionname,
+.flexcontrol {
+    cursor:pointer;
+}

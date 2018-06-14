@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,6 +26,28 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['essential_fel:configure'] = 'Peut configurer le theme';
 $string['essential_fel:editfront'] = 'Peut éditer les contenus de page d\'accueil';
+
+if (!array_key_exists('configtitle', $string)) {
+    $string['pluginname'] = 'Essential FEL';
+    $string['configtitle'] = 'Essential FEL';
+    $string['choosereadme'] = '<div class="clearfix">
+    <div class="well">
+    <h2> Essential Formation EnLigne</h2>
+    <p><img class=img-polaroid src="essential/pix/screenshot.jpg" />
+    </p>
+    </div>
+    <div class="well">
+    <h3>À propos de Essential FEL</h3>
+    <p>Essential est un thème Bootstrap modifié de Moodle qui hérite des styles et des moteurs de rendus de son thème parent.</p>
+    <h3>Parents</h3>
+    <p>Ce thème est basé sur le thème Bootstrap, qui a été créé pour Moodle 2.5, avec l\'aide de :<br>
+    Stuart Lamour, Mark Aberdour, Paul Hibbitts, Mary Evans. </p>
+    <h3>Crédits du thème</h3>
+    <p>Auteurs : Julian Ridden <br>
+    Contact : julian@moodleman.net<br>
+    Site Web : <a href="http://www.moodleman.net">www.moodleman.net</a> </p>
+    </div></div>';
+}
 
 $string['alert1'] = 'Première alerte';
 $string['alert2'] = 'Deuxième alerte';
@@ -84,23 +105,7 @@ $string['categoryiconheading'] = 'Affichage d\'icône basé sur la catégorie';
 $string['categoryiconheadingsub'] = 'Utilisez des icônes pour illustrer vos catégories';
 $string['categoryiconinfo'] = 'Définissez des icônes de catégorie personnalisées';
 $string['categoryiconinfodesc'] = 'Chaque icône est définie par son "category ID". Vous les obtenez en regardant l\'URL de chaque catégorie.';
-$string['choosereadme'] = '<div class="clearfix">
-<div class="well">
-<h2> Essential Formation EnLigne</h2>
-<p><img class=img-polaroid src="essential/pix/screenshot.jpg" />
-</p>
-</div>
-<div class="well">
-<h3>À propos de Essential FEL</h3>
-<p>Essential est un thème Bootstrap modifié de Moodle qui hérite des styles et des moteurs de rendus de son thème parent.</p>
-<h3>Parents</h3>
-<p>Ce thème est basé sur le thème Bootstrap, qui a été créé pour Moodle 2.5, avec l\'aide de :<br>
-Stuart Lamour, Mark Aberdour, Paul Hibbitts, Mary Evans. </p>
-<h3>Crédits du thème</h3>
-<p>Auteurs : Julian Ridden <br>
-Contact : julian@moodleman.net<br>
-Site Web : <a href="http://www.moodleman.net">www.moodleman.net</a> </p>
-</div></div>';
+
 $string['colordesc'] = 'Ici vous pouvez trouver différents réglages pour changer de nombreuses couleurs présentes dans ce thème.';
 $string['colorheading'] = 'Paramètres des couleurs';
 $string['colorheadingsub'] = 'Définissez les couleurs utilisées dans votre thème';
@@ -112,6 +117,9 @@ $string['copyrightdesc'] = 'Le nom de votre organisation';
 $string['coursegrades'] = 'Notes de cours';
 $string['customcss'] = 'CSS personnalisées';
 $string['customcssdesc'] = 'Toutes les règles CSS que vous ajoutez à cette zone de texte seront reflétées dans chaque page, ce qui rend plus facile la personnalisation de ce thème.';
+$string['additionalcsssheets'] = 'Feuilles de style additionelles';
+$string['additionalcsssheetsdesc'] = 'Une liste de noms de feuilles de style additionelles du répertoire /style à charger dans cette instance Moodle.';
+
 $string['dbqueries'] = 'BD Lire/Ecrire';
 $string['defaultcategoryicon'] = 'Icônes de catégorie par défaut';
 $string['defaultcategoryicondesc'] = 'Définissez une icône de catégorie par défaut';
@@ -159,6 +167,8 @@ $string['footerurlcolor'] = 'Couleur des liens dans le pied de page';
 $string['footerurlcolordesc'] = 'Définissez la couleur de vos hyperliens dans le pied de page.';
 $string['footnote'] = 'Note de bas de page';
 $string['footnotedesc'] = 'Le texte ajouté dans cette zone de texte sera affiché dans le pied de page sur tout votre site Moodle.';
+$string['footerlogo'] = 'Logo de pied de page';
+$string['footerlogodesc'] = 'Des fichiers de logos pour les emplacements de pieds de page.';
 $string['frontcontent'] = 'Activer la zone de contenu de la page d\'accueil';
 $string['frontcontentarea'] = 'Contenu de la page d\'accueil';
 $string['frontcontentareadesc'] = 'Tout ce qui est écrit dans cette zone de texte sera affiché sur toute la largeur de la page entre le diaporama et les annonces marketing';
@@ -289,6 +299,7 @@ $string['region-home-middle'] = 'Accueil (centre)';
 $string['region-home-right'] = 'Accueil (droite)';
 $string['region-side-post'] = 'Droite';
 $string['region-side-pre'] = 'Gauche';
+$string['region-main'] = 'Centre';
 $string['right'] = 'Droite';
 $string['marketingsecondrow'] = 'Deuxième rangée marketing';
 $string['enablemarketingsecondrow'] = 'Activer la deuxième rangée';
@@ -368,7 +379,61 @@ $string['website'] = 'URL du site Web';
 $string['websitedesc'] = 'Entrez l\'URL de votre propre site. (ex. http://www.pukunui.com)';
 $string['youtube'] = 'URL Youtube';
 $string['youtubedesc'] = 'Entrez l\'URL de votre chaîne YouTube. (ex. http://www.youtube.com/mycollege)';
+$string['unreadnewmessages'] = 'Vous avez {$a} nouveaux messages';
 
 $string['adduser'] = 'ajoute un compte utilisateur';
 $string['uploadusers'] = 'Importer des utilisateurs';
 $string['technical'] = 'Manoeuvres techniques';
+
+// Essential extra features (global scope).
+$string['extras'] = 'Extras';
+$string['editmodthumb'] = 'Modifier la vignette d\'activité personnalisée';
+$string['modthumb'] = 'Vignette d\'activité';
+$string['cleanthumb'] = 'Supprimer la vignette personnalisée';
+$string['modfixedthumbwidth'] = 'Taille de vignette d\'activité/ressource fixe';
+$string['modfixedthumbwidthdesc'] = 'Si défini à une valeur positive entre 1 et 100, s\'applique comme une largeur fixe en pourcentage de la largeur utile de page.';
+$string['hidelogoutlinks'] = 'Cacher les liens de déconnexion';
+$string['hidelogoutlinksdesc'] = 'Dans le cas d\'intégrzation comme sous application d\'un ENT, supprime les liens de déconnexion pour les usagers synchronisés.';
+
+$string['backtocourse'] = 'Revenir au cours';
+$string['thiscourse'] = 'Ce cours';
+
+// Theme variants.
+$string['variantsheadingsub'] = 'Gestion des variantes';
+$string['variantsheading_desc'] = '<a href="/theme/essential_fel/themecopy.php">Cloner les configurations des variantes.</a>';
+$string['themetitle'] = 'Titre de variante';
+$string['themetitledesc'] = 'Nom non fonctionnel. Nom de la variante pour mémoire.';
+$string['fromtheme'] = 'Depuis la variante';
+$string['totheme'] = 'Vers la variante';
+$string['copy'] = 'Copier';
+$string['themecopied'] = 'Paramètres de theme copiés avec succès.';
+$string['withfiles'] = 'Copier aussi les fichiers';
+$string['errorcopyonself'] = 'vous ne pouvea pas copier une variante sur elle-même';
+
+// Flexsection extras.
+$string['chooseclass'] = 'Changer le style';
+$string['sectionclass'] = 'Modifier l\'apparence de la section';
+$string['flexsectionsstyles'] = 'Styles displonibles pour la section';
+$string['nostyleoverride'] = 'Pas de modification d\'apparence';
+$string['activatestyle'] = 'Activer ce style ';
+$string['sample'] = 'Echantillon';
+$string['collapseall'] = 'Tout fermer';
+$string['expandall'] = 'Tout ouvrir';
+$string['reset'] = 'RAZ';
+$string['showactivitynames'] = 'Montrer les noms des activités';
+$string['hideactivitynames'] = 'Cacher les noms des activités';
+
+$string['flexsectionsstylesdesc'] = '
+Vous pouvez entrer une liste (une définition par ligne) de définitions de style de type:
+
+<i>&lt;stylename&gt;</i>:<i>&lt;stylelabel&gt;</i>:{<i>&lt;stylerules&gt;</i>}
+
+ou :
+
+<i>&lt;stylename&gt;</i>:<i>&lt;stylelabel&gt;</i>:<i>&lt;classname&gt;</i>
+
+Les lignes vides, ou commençant par # ou / sont ignorées.
+
+Dans le cas où vous utilisez des noms de classe CSS, ces classes devront être définies dans les feuille de style du thème, ou ajoutées par l\'administrateur
+en utilisant la fonctionnalité de customisation de la CSS du theme si ce dernier le supporte.
+';

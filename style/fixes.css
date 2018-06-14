@@ -1,0 +1,61 @@
+/* fixes strange style adidtional rule in filepicker FF / W10 */
+.moodle-dialogue-bd {
+    min-height: 400px;
+}
+
+#page-footer .footerlinks .helplink a {
+    display:none;
+}
+
+#page-footer .themecredit {
+    display: none;
+}
+
+#page-header {
+    margin-top: 0px;
+}
+
+#page-header.logo {
+    height: 100px;
+    max-height: 100px;
+}
+
+#page-header a.logo {
+    margin-top: 15px;
+}
+
+/*affiner titres de cours*/
+
+.custombox-caption.sectionheading {
+    font-weight: lighter;
+}
+
+/*masquer les dot sous les titres de cours*/
+
+.bor {
+    display: none;
+}
+
+/*masquer liserai global*/
+
+#page #page-content #region-main, #page #page-content div[role="main"], .pagelayout-redirect #page-content #region-main, .pagelayout-redirect #page-content div[role="main"] {
+    border: 0px solid #684c74;
+}
+
+/*superposition fa chevron suprimée*/
+
+.carousel-control {
+    background: transparent;
+    opacity: 10;
+    border: none;
+}
+
+/* Fixes the social icons visibility */
+
+#essential_felicons.collapse {
+   height:initial;
+}
+
+#page-login-index #page-header {
+    border-bottom: none;
+}

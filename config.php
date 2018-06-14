@@ -15,116 +15,146 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This is built using the bootstrapbase template to allow for new theme's using
- * Moodle's new Bootstrap theme engine
+ * Essential is a clean and customizable theme.
  *
  * @package     theme_essential_fel
- * @copyright   2013 Julian Ridden
+ * @copyright   2016 Gareth J Barnard
+ * @copyright   2015 Gareth J Barnard
  * @copyright   2014 Gareth J Barnard, David Bezemer
+ * @copyright   2013 Julian Ridden
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$THEME->name = 'essential_fel';
-
-// The only thing you need to change in this file when copying it to
-// create a new theme is the name above. You also need to change the name
-// in version.php and lang/en/theme_essential_fel.php as well.
+if (empty($THEME->name)) {
+    // Theme name might be forced by a variant.
+    $THEME->name = 'essential_fel';
+}
 
 $THEME->doctype = 'html5';
 $THEME->yuicssmodules = array();
-$THEME->parents = array();
+$THEME->parents = array('bootstrapbase');
+$THEME->parents_exclude_sheets = array('bootstrapbase' => array('moodle', 'editor'));
 
-$THEME->sheets[] = 'moodle';
+$THEME->sheets[] = 'essential_fel';
+$THEME->sheets[] = 'dashboard';
+$THEME->sheets[] = 'bootstrap-pix';
+$THEME->sheets[] = 'essential_fel-settings';
+$THEME->sheets[] = 'fontawesome';
+$THEME->sheets[] = 'customlabels';
 
-if (right_to_left()) {
-    $THEME->sheets[] = 'essential_fel-rtl';
-} else {
-    $THEME->sheets[] = 'essential_fel';
+$isbooting = function_exists('core_tables_exist') && !core_tables_exist();
+
+$config = new StdClass;
+if (!$isbooting) {
+    // Protect theme against first boot.
+    $config = get_config('theme_'.$THEME->name);
 }
 
-$THEME->sheets[] = 'fontawesome';
-$THEME->sheets[] = 'custom';
-$THEME->sheets[] = 'page';
+if (@$config->enablealternativethemecolors1 ||
+        @$config->enablealternativethemecolors2 ||
+        @$config->enablealternativethemecolors3 ||
+        @$config->enablealternativethemecolors4) {
+    $THEME->sheets[] = 'essential_fel-alternative';
+}
+
+if (@$config->customscrollbars) {
+    $THEME->sheets[] = 'essential_fel-scrollbars';
+}
+
+$THEME->sheets[] = 'fixes';
+$THEME->sheets[] = 'overrides';
 $THEME->sheets[] = 'customlabels';
-$THEME->sheets[] = 'settings';
-$THEME->sheets[] = 'color_overrides';
+$THEME->sheets[] = 'custom';
+
+if (!empty(@$config->additionalcsssheets)) {
+    $sheets = explode(',', $config->additionalcsssheets);
+    foreach ($sheets as $sheet) {
+        $THEME->sheets[] = $sheet;
+    }
+}
+
+$THEME->plugins_exclude_sheets = array('mod' => array('assign'));
 
 $THEME->supportscssoptimisation = false;
 
-if (intval($CFG->version) >= 2013111800) {
-    $THEME->enable_dock = true;
-    $THEME->javascripts_footer[] = 'dock';
+$THEME->javascripts_footer = array($THEME->name);
+$THEME->enable_dock = true;
+$THEME->javascripts_footer[] = 'dock';
+
+$THEME->editor_sheets = array('editor', 'custom');
+
+$baseregions = array('footer-left', 'footer-middle', 'footer-right');
+$fpaddregions = array();
+
+if (!function_exists('core_tables_exist')) {
+    require_once($CFG->dirroot.'/lib/upgradelib.php');
 }
 
-$THEME->editor_sheets = array('editor');
-
-$addregions = array();
-if (get_config('theme_essential_fel', 'frontpagemiddleblocks') > 0) {
-    $addregions = array('home-left', 'home-middle', 'home-right');
+if (@$config->frontpagemiddleblocks > 0) {
+    $fpaddregions[] = 'home';
+}
+if (@$config->fppagetopblocks > 0) {
+    $fpaddregions[] = 'page-top';
+}
+if (@$config->haveheaderblock > 0) {
+    $baseregions[] = 'header';
+    $fpaddregions[] = 'header';
 }
 
+$standardregions = array_merge(array('side-pre', 'page-top'), $baseregions);
 
 $THEME->layouts = array(
     // Most backwards compatible layout without the blocks - this is the layout used by default.
     'base' => array(
         'file' => 'columns1.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
-        'defaultregion' => '',
+        'regions' => $baseregions,
+        'defaultregion' => 'footer-middle',
     ),
-
     // Front page.
     'frontpage' => array(
         'file' => 'frontpage.php',
-        'regions' => array_merge(array('side-pre', 'footer-left', 'footer-middle', 'footer-right', 'hidden-dock'), $addregions),
+        'regions' => array_merge(array('side-pre', 'footer-left', 'footer-middle', 'footer-right', 'hidden-dock'),
+                $fpaddregions),
         'defaultregion' => 'side-pre',
     ),
-
     // Standard layout with blocks, this is recommended for most pages with general information.
     'standard' => array(
         'file' => 'columns2.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
-        'defaultregion' => 'side-pre',
-    ),
-
-    // Standard layout with blocks, this is recommended for most pages with general information.
-    'message-index' => array(
-        'file' => 'columns2.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => $standardregions,
         'defaultregion' => 'side-pre',
     ),
     // Main course page.
     'course' => array(
         'file' => 'columns3.php',
-        'regions' => array('side-pre', 'side-post', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array_merge($standardregions, array('side-post')),
         'defaultregion' => 'side-post',
     ),
     'coursecategory' => array(
         'file' => 'columns2.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => $standardregions,
         'defaultregion' => 'side-pre',
     ),
-    // part of course, typical for modules - default page layout if $cm specified in require_login().
+    // Part of course, typical for modules - default page layout if $cm specified in require_login().
     'incourse' => array(
         'file' => 'columns2.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => $standardregions,
         'defaultregion' => 'side-pre',
     ),
     // Server administration scripts.
     'admin' => array(
-        'file' => 'columns2.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
+        'file' => 'admin.php',
+        'regions' => array_merge($baseregions, array('side-pre')),
         'defaultregion' => 'side-pre',
     ),
     // My dashboard page.
     'mydashboard' => array(
         'file' => 'columns3.php',
-        'regions' => array('side-pre', 'side-post', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array_merge($standardregions, array('side-post')),
         'defaultregion' => 'side-post',
     ),
     // My public page.
     'mypublic' => array(
         'file' => 'columns3.php',
-        'regions' => array('side-pre', 'side-post', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array_merge($standardregions, array('side-post')),
         'defaultregion' => 'side-post',
     ),
     'login' => array(
@@ -132,7 +162,6 @@ $THEME->layouts = array(
         'regions' => array('footer-left', 'footer-middle', 'footer-right'),
         'defaultregion' => '',
     ),
-
     // Pages that appear in pop-up windows - no navigation, no blocks, no header.
     'popup' => array(
         'file' => 'popup.php',
@@ -151,6 +180,7 @@ $THEME->layouts = array(
         'file' => 'embedded.php',
         'regions' => array(),
         'defaultregion' => '',
+        'options' => array('noheader' => true, 'nofooter' => true, 'nocoursefooter' => true),
     ),
     // Used during upgrade and install, and for the 'This site is undergoing maintenance' message.
     // This must not have any blocks, links, or API calls that would lead to database or cache interaction.
@@ -163,7 +193,7 @@ $THEME->layouts = array(
     // Should display the content and basic headers only.
     'print' => array(
         'file' => 'columns1.php',
-        'regions' => array('footer-left', 'footer-middle', 'footer-right'),
+        'regions' => $baseregions,
         'defaultregion' => '',
         'options' => array('nofooter' => true),
     ),
@@ -176,30 +206,36 @@ $THEME->layouts = array(
     // The pagelayout used for reports.
     'report' => array(
         'file' => 'report.php',
-        'regions' => array('side-pre', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array_merge($baseregions, array('side-pre')),
         'defaultregion' => 'side-pre',
     ),
     // The pagelayout used for safebrowser and securewindow.
     'secure' => array(
         'file' => 'secure.php',
-        'regions' => array('side-pre', 'side-post', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array('side-pre', 'side-post'),
         'defaultregion' => 'side-pre'
     ),
     'format_page' => array(
         'file' => 'page.php',
-        'regions' => array('side-pre', 'main', 'side-post', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array('side-pre', 'main', 'side-post'),
         'defaultregion' => 'side-post', // avoid putting in main, or standard course will fail showing the new block menu 
+        'options' => array('langmenu' => true)
     ),
 
     'format_page_action' => array(
         'file' => 'page.php',
-        'regions' => array('side-pre', 'side-post', 'main', 'footer-left', 'footer-middle', 'footer-right'),
+        'regions' => array(),
         'options' => array('langmenu' => true, 'noblocks' => true),
-        'defaultregion' => 'side-post',
+        'defaultregion' => '',
     ),
 );
 
-$THEME->javascripts_footer[] = 'coloursswitcher';
-
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
-$THEME->csspostprocess = 'theme_essential_fel_process_css';
+$THEME->csspostprocess = 'theme_'.$THEME->name.'_process_css';
+
+// Tabbed quickform addition for generalizing the Jquery.
+global $PAGE;
+if (!empty($PAGE) && !$PAGE->state) {
+    $PAGE->requires->jquery();
+    $PAGE->requires->js_call_amd('local_vflibs/docfix', 'init');
+}

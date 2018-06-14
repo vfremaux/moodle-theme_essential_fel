@@ -1,3 +1,9 @@
+/* indent non customlabels */
+
+.activity:not(.customlabel):not(.label) {
+    margin-left: 120px !important;
+}
+
 /* General rules */
 
 td.custombox-header-thumb,
@@ -16,6 +22,11 @@ td.custombox-thumb {
 
 .custombox-content-caption{
     font-weight: bold !important;
+}
+
+/* disables module indent */
+li.customlabel .mod-indent-outer {
+    padding-left:0px !important;
 }
 
 #page-region-main .custombox-content-caption,
@@ -39,15 +50,15 @@ div.custombox-heading.courseheading {
     font-size: 3.2em;
     line-height: 1.3em;
     font-weight:100;
-    font-family:RALEWAY-REGULAR, sans-serif;
+    font-family:"gothic", sans-serif;
 }
 
 /* Sequence heading */
 
 .custombox-caption.sequenceheading {
-    font-size: 2.3em;
+    font-size: 2.5em;
     line-height: 1.3em;
-    font-family:RALEWAY-REGULAR;
+    font-family:"gothic", sans-serif;
     color: #151421 !important;
     border-bottom: 5px solid #059DD1 !important;
 }
@@ -74,16 +85,14 @@ tr.custombox-icon.sequenceheading {
 .custombox-caption.sectionheading {
     font-size: 2.5em;
     line-height: 1.3em;
-    font-family:RALEWAY-REGULAR, sans-serif;
+    font-family:"gothic", sans-serif;
 }
 
 .custombox-caption.unitheading {
-    font-size: 2.0em;
+    font-size: 1.6em;
     line-height: 1.2em;
-    font-family:RALEWAY-REGULAR, sans-serif;
-    color: #151421 !important;
-    border-bottom: 2px solid #059DD1 !important;
-    padding:3px 0px !important;
+    font-family:"gothic", sans-serif;
+    color:#A0A0A0;
 }
 
 /* Course data */
@@ -230,14 +239,13 @@ table.custombox-courseclassifier {
 #region-pre td.custombox-thumb.pedagogicadvice,
 #region-post td.custombox-thumb.pedagogicadvice,
 #page-region-post  td.custombox-thumb.pedagogicadvice {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png"); 
+    min-width:35px;
+    width:35px !important;
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png");
     background-size:50%;
     background-position:20% 0%;
     background-repeat: no-repeat;
-    min-width:35px;
-    width:35px !important;
     height:73px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
     text-align:center;
     color:white;
@@ -254,7 +262,7 @@ td.custombox-thumb.pedagogicadvice:after {
 #page-region-main td.custombox-thumb.pedagogicadvice {
     width:65px !important;
     min-width:65px !important;
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-position:30% 0% !important;
     background-repeat: no-repeat !important;
     height:73px !important;
@@ -272,13 +280,12 @@ td.custombox-content-text.pedagogicadvice {
 #region-pre td.custombox-thumb.authornote,
 #region-post td.custombox-thumb.authornote,
 #page-region-post  td.custombox-thumb.authornote {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png"); 
+    min-width:35px;
+    width:35px !important;
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png");
     background-size:50%;
     background-position:20% 0%;
     background-repeat: no-repeat;
-    font-size:0.8em;
-    min-width:35px;
-    width:35px !important;
     height:73px !important;
     border-right:1px solid #A0A0A0 !important;
     text-align:center;
@@ -296,7 +303,7 @@ td.custombox-thumb.authornote:after {
 #page-region-main td.custombox-thumb.authornote {
     width:65px !important;
     min-width:65px !important;
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-position:30% 0% !important;
     background-repeat: no-repeat !important;
     height:73px !important;
@@ -309,7 +316,7 @@ td.custombox-thumb.authornote:after {
 
 #page-region-main td.custombox-header-thumb.important,
 #region-main td.custombox-header-thumb.important{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/icon_important.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/icon_important.png") !important;
     background-repeat: no-repeat;
     height:73px !important;
     width:80px !important;
@@ -321,13 +328,11 @@ td.custombox-thumb.authornote:after {
 #region-pre td.custombox-header-thumb.important,
 #region-post td.custombox-header-thumb.important,
 #page-region-post  td.custombox-header-thumb.important{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/icon_important_small.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/icon_important_small.png") !important;
     background-repeat: no-repeat;
-    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
 }
 
@@ -341,7 +346,7 @@ td.custombox-content.important{
 
 #page-region-main td.custombox-header-thumb.soluce,
 #region-main td.custombox-header-thumb.soluce {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important;
     background-position:30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -364,18 +369,17 @@ td.custombox-header-thumb.soluce:after {
 #region-pre td.custombox-header-thumb.soluce,
 #region-post td.custombox-header-thumb.soluce,
 #page-region-post td.custombox-header-thumb.soluce{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
-    font-size:0.8em;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
 }
 
 td.custombox-header-caption.soluce{
-    font-size:12px !important;
+    font-size:1.3em !important;
 }
 
 table.custombox-soluce{
@@ -387,7 +391,6 @@ table.custombox-soluce{
 #page-region-main td.custombox-header-thumb.tipsandtricks,
 #region-main td.custombox-header-thumb.tipsandtricks{
     background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important; 
-    background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
     width:80px !important;
@@ -407,14 +410,13 @@ td.custombox-header-thumb.tipsandtricks:after {
 #region-pre td.custombox-header-thumb.tipsandtricks,
 #region-post td.custombox-header-thumb.tipsandtricks,
 #page-region-post td.custombox-header-thumb.tipsandtricks{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/greenspot.png") !important;
     background-size: 50%;
     background-position: 20% 0%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
 }
 
@@ -427,7 +429,7 @@ td.custombox-header-caption.tipsandtricks{
 
 #page-region-main td.custombox-header-thumb.seealso,
 #region-main td.custombox-header-thumb.seealso{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -448,13 +450,12 @@ td.custombox-header-thumb.seealso:after {
 #region-pre td.custombox-header-thumb.seealso,
 #region-post td.custombox-header-thumb.seealso,
 #page-region-post td.custombox-header-thumb.seealso{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-repeat: no-repeat;
-    background-size:50%;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
 }
 
@@ -470,7 +471,7 @@ td.custombox-content.seealso{
 
 #page-region-main td.custombox-header-thumb.localgoals,
 #region-main td.custombox-header-thumb.localgoals{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -491,13 +492,12 @@ td.custombox-header-thumb.localgoals:after {
 #region-pre td.custombox-header-thumb.localgoals,
 #region-post td.custombox-header-thumb.localgoals,
 #page-region-post td.custombox-header-thumb.localgoals{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
     text-align:center;
 }
@@ -507,14 +507,14 @@ td.custombox-content.localgoals{
 }
 
 td.custombox-header-caption.localgoals {
-    color: #F2A439 !important;
+    color: #23A7c1 !important;
 }
 
 /* Définition */
 
 #page-region-main td.custombox-header-thumb.definition,
 #region-main td.custombox-header-thumb.definition{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/redspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/redspot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -535,14 +535,13 @@ td.custombox-header-thumb.definition:after {
 #region-pre td.custombox-header-thumb.definition,
 #region-post td.custombox-header-thumb.definition,
 #page-region-post td.custombox-header-thumb.definition{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/redspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/redspot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
@@ -556,14 +555,14 @@ td.custombox-content.definition{
 }
 
 td.custombox-header-caption.definition{
-    color: #F2A439 !important;
+    color: #A00000 !important;
 }
 
 /* Theorema */
 
 #page-region-main td.custombox-header-thumb.theorema,
 #region-main td.custombox-header-thumb.theorema{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -584,14 +583,13 @@ td.custombox-header-thumb.theorema:after {
 #region-pre td.custombox-header-thumb.theorema,
 #region-post td.custombox-header-thumb.theorema,
 #page-region-post td.custombox-header-thumb.theorema{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
@@ -607,7 +605,7 @@ td.custombox-header-caption.theorema {
 
 #page-region-main td.custombox-header-thumb.remind,
 #region-main td.custombox-header-thumb.remind{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -628,7 +626,7 @@ td.custombox-header-thumb.remind:after {
 #region-pre td.custombox-header-thumb.remind,
 #region-post td.custombox-header-thumb.remind,
 #page-region-post td.custombox-header-thumb.remind{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -650,7 +648,7 @@ td.custombox-header-caption.remind {
 
 #page-region-main td.custombox-header-thumb.information,
 #region-main td.custombox-header-thumb.information{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -671,7 +669,7 @@ td.custombox-header-thumb.information:after {
 #region-pre td.custombox-header-thumb.information,
 #region-post td.custombox-header-thumb.information,
 #page-region-post td.custombox-header-thumb.information{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -693,7 +691,7 @@ td.custombox-header-caption.information {
 
 #page-region-main td.custombox-header-thumb.fundamental,
 #region-main td.custombox-header-thumb.fundamental{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/A94C9A_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/A94C9A_spot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -714,7 +712,7 @@ td.custombox-header-thumb.fundamental:after {
 #region-pre td.custombox-header-thumb.fundamental,
 #region-post td.custombox-header-thumb.fundamental,
 #page-region-post td.custombox-header-thumb.fundamental {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/A94C9A_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/A94C9A_spot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -736,7 +734,7 @@ td.custombox-header-caption.fundamental {
 
 #page-region-main td.custombox-header-thumb.method,
 #region-main td.custombox-header-thumb.method{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/F3003A_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/F3003A_spot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -757,7 +755,7 @@ td.custombox-header-thumb.method:after {
 #region-pre td.custombox-header-thumb.method,
 #region-post td.custombox-header-thumb.method,
 #page-region-post td.custombox-header-thumb.method {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/F3003A_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/F3003A_spot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -779,7 +777,7 @@ td.custombox-header-caption.method {
 
 #page-region-main td.custombox-header-thumb.question,
 #region-main td.custombox-header-thumb.question{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/FFFF1E_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/FFFF1E_spot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -800,7 +798,7 @@ td.custombox-header-thumb.question:after {
 #region-pre td.custombox-header-thumb.question,
 #region-post td.custombox-header-thumb.question,
 #page-region-post td.custombox-header-thumb.question {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/FFFF1E_spot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/FFFF1E_spot.png") !important;
     background-size: 50%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -818,11 +816,55 @@ td.custombox-header-caption.question {
     color: #FF8080 !important;
 }
 
+/* Instructions */
+
+#page-region-main td.custombox-header-thumb.instructions,
+#region-main td.custombox-header-thumb.instructions{
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/BA002D_spot.png") !important;
+    background-position: 30% 0%;
+    background-repeat: no-repeat;
+    height:73px !important;
+    width:80px !important;
+    min-width:80px !important;
+    border-right:1px solid #A0A0A0 !important;
+    text-align:center;
+}
+
+td.custombox-header-thumb.instructions:after {
+    content: "\f0a4";
+    font-family: "fontAwesome";
+    color:#ffffff;
+    font-size:32px;
+}
+
+#page-region-pre td.custombox-header-thumb.instructions,
+#region-pre td.custombox-header-thumb.instructions,
+#region-post td.custombox-header-thumb.instructions,
+#page-region-post td.custombox-header-thumb.instructions {
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/BA002D_spot.png") !important;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    height:73px !important;
+    width:35px !important;
+    min-width:35px !important;
+    border-right:1px solid #A0A0A0 !important;
+    text-align:center;
+}
+
+td.custombox-content.instructions {
+    background-image: none !important;
+}
+
+td.custombox-header-caption.instructions {
+    color: #FF8080 !important;
+}
+
 /* Keypoints */
 
 #page-region-main td.custombox-header-thumb.keypoints,
-#region-main td.custombox-header-thumb.keypoints{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+#region-main td.custombox-header-thumb.keypoints {
+    /* background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; */
+    background-image: url("/mod/customlabel/pluginicon.php?shape=circle&type=keypoints") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -844,14 +886,14 @@ td.custombox-header-thumb.keypoints:after {
 #region-pre td.custombox-header-thumb.keypoints,
 #region-post td.custombox-header-thumb.keypoints,
 #page-region-post td.custombox-header-thumb.keypoints{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; 
+    /* background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/orangespot.png") !important; */
+    background-image: url("/mod/customlabel/pluginicon.php?shape=circle&type=keypoints&stroke=orange") !important;
     background-size:50%;
     background-position: 20% 0%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
 }
 
@@ -871,7 +913,7 @@ td.custombox-content.keypoints{
 
 #page-region-main td.custombox-header-thumb.example,
 #region-main td.custombox-header-thumb.example{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -893,14 +935,13 @@ td.custombox-header-thumb.example:after {
 #region-pre td.custombox-header-thumb.example,
 #region-post td.custombox-header-thumb.example,
 #page-region-post td.custombox-header-thumb.example{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/grayspot.png") !important;
     background-size: 50%;
     background-position: 20% 0%;
     background-repeat: no-repeat;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
-    font-size:0.8em;
     border-right:1px solid #A0A0A0 !important;
 }
 
@@ -916,7 +957,7 @@ td.custombox-content.example{
 
 #page-region-main td.custombox-header-thumb.contactpoint,
 #region-main td.custombox-header-thumb.contactpoint{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -937,21 +978,20 @@ td.custombox-header-thumb.contactpoint:after {
 #region-pre td.custombox-header-thumb.contactpoint,
 #region-post td.custombox-header-thumb.contactpoint,
 #page-region-post td.custombox-header-thumb.contactpoint{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
-    background-size: 50%;
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
 #page-region-main td.custombox-header-thumb.contactpoint.phone,
 #region-main td.custombox-header-thumb.contactpoint.phone{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -972,21 +1012,20 @@ td.custombox-header-thumb.contactpoint.phone:after {
 #region-pre td.custombox-header-thumb.contactpoint.phone,
 #region-post td.custombox-header-thumb.contactpoint.phone,
 #page-region-post td.custombox-header-thumb.contactpoint.phone{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
-    background-size:50%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
 #page-region-main td.custombox-header-thumb.contactpoint.mail,
 #region-main td.custombox-header-thumb.contactpoint.mail{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1007,21 +1046,20 @@ td.custombox-header-thumb.contactpoint.mail:after {
 #region-pre td.custombox-header-thumb.contactpoint.mail,
 #region-post td.custombox-header-thumb.contactpoint.mail,
 #page-region-post td.custombox-header-thumb.contactpoint.mail{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
-    background-size: 50%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
 #page-region-main td.custombox-header-thumb.contactpoint.onlinevocal,
 #region-main td.custombox-header-thumb.contactpoint.onlinevocal{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1042,21 +1080,20 @@ td.custombox-header-thumb.contactpoint.onlinevocal:after {
 #region-pre td.custombox-header-thumb.contactpoint.onlinevocal,
 #region-post td.custombox-header-thumb.contactpoint.onlinevocal,
 #page-region-post td.custombox-header-thumb.contactpoint.onlinevocal {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
-    background-size: 50%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
 #page-region-main td.custombox-header-thumb.contactpoint.facetoface,
 #region-main td.custombox-header-thumb.contactpoint.facetoface{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1077,9 +1114,10 @@ td.custombox-header-thumb.contactpoint.facetoface:after {
 #region-pre td.custombox-header-thumb.contactpoint.facetoface,
 #region-post td.custombox-header-thumb.contactpoint.facetoface,
 #page-region-post td.custombox-header-thumb.contactpoint.facetoface{    
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
@@ -1089,7 +1127,7 @@ td.custombox-header-thumb.contactpoint.facetoface:after {
 
 #page-region-main td.custombox-header-thumb.contactpoint.meeting,
 #region-main td.custombox-header-thumb.contactpoint.meeting{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1110,21 +1148,20 @@ td.custombox-header-thumb.contactpoint.meeting:after {
 #region-pre td.custombox-header-thumb.contactpoint.meeting,
 #region-post td.custombox-header-thumb.contactpoint.meeting,
 #page-region-post td.custombox-header-thumb.contactpoint.meeting{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
-    background-size: 50%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
     text-align:center;
 }
 
 #page-region-main td.custombox-header-thumb.contactpoint.chat,
 #region-main td.custombox-header-thumb.contactpoint.chat {
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1145,9 +1182,10 @@ td.custombox-header-thumb.contactpoint.chat:after {
 #region-post td.custombox-header-thumb.contactpoint.chat,
 #region-pre td.custombox-header-thumb.contactpoint.chat,
 #page-region-pre td.custombox-header-thumb.contactpoint.chat{    
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/darkbluespot.png") !important;
     background-position: 20% 0%;
     background-repeat: no-repeat;
+    background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
@@ -1159,7 +1197,7 @@ td.custombox-header-thumb.contactpoint.chat:after {
 
 #page-region-main td.custombox-header-thumb.worktodo,
 #region-main td.custombox-header-thumb.worktodo{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-position: 30% 0%;
     background-repeat: no-repeat;
     height:73px !important;
@@ -1180,19 +1218,19 @@ td.custombox-header-thumb.worktodo:after {
 #region-pre td.custombox-header-thumb.worktodo,
 #region-post td.custombox-header-thumb.worktodo,
 #page-region-post td.custombox-header-thumb.worktodo{
-    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important; 
+    background-image: url("/theme/essential_fel/pix_plugins/mod/customlabel/bluespot.png") !important;
     background-repeat: no-repeat;
     background-size: 50%;
     height:73px !important;
     width:35px !important;
     min-width:35px !important;
     border-right:1px solid #A0A0A0 !important;
-    font-size:0.8em;
 }
 
-td.custombox-caption.worktodo{
+td.custombox-header-caption.worktodo{
     font-size:1.3em !important;
     padding-bottom:5px !important;
+    color:#23A7c1 !important;
 }
 
 td.custombox-content.worktodo{

@@ -15,159 +15,95 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This is built using the bootstrapbase template to allow for new theme's using
- * Moodle's new Bootstrap theme engine
+ * Essential is a clean and customizable theme.
  *
  * @package     theme_essential_fel
- * @copyright   2013 Julian Ridden
+ * @copyright   2016 Gareth J Barnard
  * @copyright   2014 Gareth J Barnard, David Bezemer
+ * @copyright   2013 Julian Ridden
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-function theme_essential_fel_set_fontwww($css) {
-    global $CFG;
-
-    $fontwww = preg_replace("(https?:)", "", $CFG->wwwroot . '/theme/essential_fel/fonts/');
-
-    $tag = '[[setting:fontwww]]';
-
-    if (theme_essential_fel_get_setting('bootstrapcdn')) {
-        $css = str_replace($tag, '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/fonts/', $css);
-    } else {
-        $css = str_replace($tag, $fontwww, $css);
-    }
-    return $css;
-}
-
-function theme_essential_fel_get_setting($setting, $format = false) {
-    static $theme;
-
-    if (empty($theme)) {
-        $theme = theme_config::load('essential_fel');
-    }
-    if (empty($theme->settings->$setting)) {
-        return false;
-    } else if (!$format) {
-        return $theme->settings->$setting;
-    } else if ($format === 'format_text') {
-        return format_text($theme->settings->$setting);
-    } else {
-        return format_string($theme->settings->$setting);
-    }
-}
-
-function theme_essential_fel_set_headerbackground($css, $image) {
-    $tag = '[[setting:headerbackground]]';
-    $replacement = $image;
-
-    if (!($replacement)) {
-        $replacement = '';
-    }
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_set_logo($css, $logo) {
-    $tag = '[[setting:logo]]';
-    $replacement = $logo;
-
-    if (!($replacement)) {
-        $replacement = '';
-    }
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_get_title($location) {
-    global $CFG, $SITE;
-    $title = '';
-
-    if ($location === 'navbar') {
-        switch (theme_essential_fel_get_setting('navbartitle')) {
-            case 0:
-                return false;
-                break;
-            case 1:
-                $title = '<a class="brand" href="' . $CFG->wwwroot . '">' . $SITE->fullname . '</a>';
-                break;
-            case 2:
-                $title = '<a class="brand" href="' . $CFG->wwwroot . '">' . $SITE->shortname . '</a>';
-                break;
-            default:
-                $title = '<a class="brand" href="' . $CFG->wwwroot . '">' . $SITE->shortname . '</a>';
-                break;
-        }
-    } else if ($location === 'header') {
-        switch (theme_essential_fel_get_setting('headertitle')) {
-            case 0:
-                return false;
-                break;
-            case 1:
-                $title = '<h1 id="title">' . $SITE->fullname . '</h1>';
-                break;
-            case 2:
-                $title = '<h1 id="title">' . $SITE->shortname . '</h1>';
-                break;
-            case 3:
-                $title = '<h1 id="smalltitle">' . $SITE->fullname . '</h2>';
-                $title .= '<h2 id="subtitle">' . strip_tags($SITE->summary) . '</h3>';
-                break;
-            case 4:
-                $title = '<h1 id="smalltitle">' . $SITE->shortname . '</h2>';
-                $title .= '<h2 id="subtitle">' . strip_tags($SITE->summary) . '</h3>';
-                break;
-            default:
-                break;
-        }
-    }
-    return $title;
-}
-
-function theme_essential_fel_edit_button($section) {
-    global $PAGE, $CFG;
-    if ($PAGE->user_is_editing() && is_siteadmin()) {
-        return '<a class="btn btn-success" href="' . $CFG->wwwroot . '/admin/settings.php?section=' . $section . '">' . get_string('edit') . '</a>';
-    }
-}
 
 /**
  * Serves any files associated with the theme settings.
  *
- * @param stdClass $course
- * @param stdClass $cm
- * @param context $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
- * @param array $options
- * @return bool
+ * @param stdClass $course.
+ * @param stdClass $cm.
+ * @param context $context.
+ * @param string $filearea.
+ * @param array $args.
+ * @param bool $forcedownload.
+ * @param array $options.
+ * @return bool.
  */
+require_once($CFG->dirroot.'/theme/essential_fel/classes/global_toolbox.php');
+
 function theme_essential_fel_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     static $theme;
+    global $DB;
+
     if (empty($theme)) {
         $theme = theme_config::load('essential_fel');
     }
+
+    if ($filearea == 'modthumb') {
+        // Exceptionnnaly we let pass without control the course modules context queries to intro files.
+        // We allow format_page component pages which real component identity is given by the context id.
+
+        $fs = get_file_storage();
+        if ($course->format == 'page') {
+            include_once($CFG->dirroot.'/course/format/page/classes/page.class.php');
+            if (!course_page::check_page_public_accessibility($course)) {
+                // Process as usual.
+                require_course_login($course);
+            }
+        } else {
+            require_course_login($course);
+        }
+
+        // Seek for the real component hidden beside the context.
+        $cm = $DB->get_record('course_modules', array('id' => $context->instanceid));
+        $component = 'mod_'.$DB->get_field('modules', 'name', array('id' => $cm->module));
+        $relativepath = implode('/', $args);
+        $fullpath = "/{$context->id}/$component/$filearea/$relativepath";
+        $fs->get_file_by_hash(sha1($fullpath));
+        if ((!$file = $fs->get_file_by_hash(sha1($fullpath))) || $file->is_directory()) {
+            return false;
+        }
+        send_stored_file($file, 0, 0, true); // Download MUST be forced - security!
+        die;
+    }
+
     if ($context->contextlevel == CONTEXT_SYSTEM) {
+        // By default, theme files must be cache-able by both browsers and proxies.  From 'More' theme.
+        if (!array_key_exists('cacheability', $options)) {
+            $options['cacheability'] = 'public';
+        }
         if ($filearea === 'logo') {
             return $theme->setting_file_serve('logo', $args, $forcedownload, $options);
-        } elseif ($filearea === 'pagebackground') {
+        } else if ($filearea === 'style') {
+            theme_essential_fel_serve_css($args[1]);
+        } else if ($filearea === 'headerbackground') {
+            return $theme->setting_file_serve('headerbackground', $args, $forcedownload, $options);
+        } else if ($filearea === 'pagebackground') {
             return $theme->setting_file_serve('pagebackground', $args, $forcedownload, $options);
-        } elseif (preg_match("/slide[1-9][0-9]*image/", $filearea) !== false) {
+        } else if ($filearea === 'favicon') {
+            return $theme->setting_file_serve('favicon', $args, $forcedownload, $options);
+        } else if (preg_match("/^fontfile(eot|otf|svg|ttf|woff|woff2)(heading|body)$/", $filearea)) {
+            // Ref: http://www.regexr.com/.
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
-        } elseif ((substr($filearea, 0, 9) === 'marketing') && (substr($filearea, 10, 5) === 'image')) {
+        } else if (preg_match("/^(marketing|slide|categoryct)[1-9][0-9]*image$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
-        } elseif ($filearea === 'iphoneicon') {
+        } else if ($filearea === 'iphoneicon') {
             return $theme->setting_file_serve('iphoneicon', $args, $forcedownload, $options);
-        } elseif ($filearea === 'iphoneretinaicon') {
+        } else if ($filearea === 'iphoneretinaicon') {
             return $theme->setting_file_serve('iphoneretinaicon', $args, $forcedownload, $options);
-        } elseif ($filearea === 'ipadicon') {
+        } else if ($filearea === 'ipadicon') {
             return $theme->setting_file_serve('ipadicon', $args, $forcedownload, $options);
-        } elseif ($filearea === 'ipadretinaicon') {
+        } else if ($filearea === 'ipadretinaicon') {
             return $theme->setting_file_serve('ipadretinaicon', $args, $forcedownload, $options);
-        } elseif ($filearea === 'fontfilettfheading') {
-            return $theme->setting_file_serve('fontfilettfheading', $args, $forcedownload, $options);
-        } elseif ($filearea === 'fontfilettfbody') {
-            return $theme->setting_file_serve('fontfilettfbody', $args, $forcedownload, $options);
+        } else if ($filearea === 'loginbackground') {
+            return $theme->setting_file_serve('loginbackground', $args, $forcedownload, $options);
         } else {
             send_file_not_found();
         }
@@ -176,683 +112,446 @@ function theme_essential_fel_pluginfile($course, $cm, $context, $filearea, $args
     }
 }
 
-/**
- * Set the width on the container-fluid div
- *
- * @param string $css
- * @param mixed $pagewidth
- * @return string
- */
-function theme_essential_fel_set_pagewidth($css, $pagewidth) {
-    $tag = '[[setting:pagewidth]]';
-    $replacement = $pagewidth;
-    if (!($replacement)) {
-        $replacement = '1200';
-    }
-    if ($replacement == "100") {
-        $css = str_replace($tag, $replacement . '%', $css);
-    } else {
-        $css = str_replace($tag, $replacement . 'px', $css);
-    }
-    return $css;
-}
-
-
-/**
- * get_performance_output() override get_peformance_info()
- *  in moodlelib.php. Returns a string
- * values ready for use.
- * @param array $param
- * @param string $perfinfo
- * @return string $html
- */
-function theme_essential_fel_performance_output($param, $perfinfo)
-{
-    $html = html_writer::start_tag('div', array('class' => 'container-fluid performanceinfo'));
-    $html .= html_writer::start_tag('div', array('class' => 'row-fluid'));
-    $html .= html_writer::tag('h2', get_string('perfinfoheading', 'theme_essential_fel'));
-    $html .= html_writer::end_tag('div');
-    $html .= html_writer::start_tag('div', array('class' => 'row-fluid'));
-    if (isset($param['realtime'])) {
-        $html .= html_writer::start_tag('div', array('class' => 'span3'));
-        $html .= html_writer::tag('var', round($param['realtime'], 2) . ' ' . get_string('seconds'), array('id' => 'load'));
-        $html .= html_writer::span(get_string('loadtime', 'theme_essential_fel'));
-        $html .= html_writer::end_tag('div');
-    }
-    if (isset($param['memory_total'])) {
-        $html .= html_writer::start_tag('div', array('class' => 'span3'));
-        $html .= html_writer::tag('var', display_size($param['memory_total']), array('id' => 'memory'));
-        $html .= html_writer::span(get_string('memused', 'theme_essential_fel'));
-        $html .= html_writer::end_tag('div');
-    }
-    if (isset($param['includecount'])) {
-        $html .= html_writer::start_tag('div', array('class' => 'span3'));
-        $html .= html_writer::tag('var', $param['includecount'], array('id' => 'included'));
-        $html .= html_writer::span(get_string('included', 'theme_essential_fel'));
-        $html .= html_writer::end_tag('div');
-    }
-    if (isset($param['dbqueries'])) {
-        $html .= html_writer::start_tag('div', array('class' => 'span3'));
-        $html .= html_writer::tag('var', $param['dbqueries'], array('id' => 'db'));
-        $html .= html_writer::span(get_string('dbqueries', 'theme_essential_fel'));
-        $html .= html_writer::end_tag('div');
-    }
-    $html .= html_writer::end_tag('div');
-    if ($perfinfo === "max") {
-        $html .= html_writer::empty_tag('hr');
-        $html .= html_writer::start_tag('div', array('class' => 'row-fluid'));
-        $html .= html_writer::tag('h2', get_string('extperfinfoheading', 'theme_essential_fel'));
-        $html .= html_writer::end_tag('div');
-        $html .= html_writer::start_tag('div', array('class' => 'row-fluid'));
-        if (isset($param['serverload'])) {
-            $html .= html_writer::start_tag('div', array('class' => 'span3'));
-            $html .= html_writer::tag('var', $param['serverload'], array('id' => 'load'));
-            $html .= html_writer::span(get_string('serverload', 'theme_essential_fel'));
-            $html .= html_writer::end_tag('div');
-        }
-        if (isset($param['memory_peak'])) {
-            $html .= html_writer::start_tag('div', array('class' => 'span3'));
-            $html .= html_writer::tag('var', display_size($param['memory_peak']), array('id' => 'load'));
-            $html .= html_writer::span(get_string('peakmem', 'theme_essential_fel'));
-            $html .= html_writer::end_tag('div');
-        }
-        if (isset($param['cachesused'])) {
-            $html .= html_writer::start_tag('div', array('class' => 'span3'));
-            $html .= html_writer::tag('var', $param['cachesused'], array('id' => 'cache'));
-            $html .= html_writer::span(get_string('peakmem', 'theme_essential_fel'));
-            $html .= html_writer::end_tag('div');
-        }
-        if (isset($param['sessionsize'])) {
-            $html .= html_writer::start_tag('div', array('class' => 'span3'));
-            $html .= html_writer::tag('var', $param['sessionsize'], array('id' => 'session'));
-            $html .= html_writer::span(get_string('sessionsize', 'theme_essential_fel'));
-            $html .= html_writer::end_tag('div');
-        }
-        $html .= html_writer::end_tag('div');
-    }
-    $html .= html_writer::end_tag('div');
-    $html .= html_writer::end_tag('div');
-
-    return $html;
-}
-
-function theme_essential_fel_hex2rgba($hex, $opacity)
-{
-    $hex = str_replace("#", "", $hex);
-
-    if (strlen($hex) == 3) {
-        $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-        $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-        $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-    } else {
-        $r = hexdec(substr($hex, 0, 2));
-        $g = hexdec(substr($hex, 2, 2));
-        $b = hexdec(substr($hex, 4, 2));
-    }
-    return "rgba($r, $g, $b, $opacity)";
-}
-
-/**
- * Adds any custom CSS to the CSS before it is cached.
- *
- * @param string $css The original CSS.
- * @param string $customcss The custom CSS to add.
- * @return string The CSS which now contains our custom CSS.
- */
-function theme_essential_fel_set_customcss($css, $customcss)
-{
-    $tag = '[[setting:customcss]]';
-    $replacement = $customcss;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_process_css($css, $theme)
-{
-    // Set the theme width
-    $pagewidth          = theme_essential_fel_get_setting('pagewidth');
-    $css                = theme_essential_fel_set_pagewidth($css, $pagewidth);
-
-    // Set the theme font
-    $headingfont        = theme_essential_fel_get_setting('fontnameheading');
-    $bodyfont           = theme_essential_fel_get_setting('fontnamebody');
-
-    $css                = theme_essential_fel_set_headingfont($css, $headingfont);
-    $css                = theme_essential_fel_set_bodyfont($css, $bodyfont);
-    $css                = theme_essential_fel_set_fontfiles($css, 'heading', $headingfont, $theme);
-    $css                = theme_essential_fel_set_fontfiles($css, 'body', $bodyfont, $theme);
-
-    // Set the theme colour.
-    $themecolor         = theme_essential_fel_get_setting('themecolor');
-    $css                = theme_essential_fel_set_color($css, $themecolor, '[[setting:themecolor]]', '#30ADD1');
-
-    // Set the page background colour.
-    $themecolor         = theme_essential_fel_get_setting('backgroundcolor');
-    $css                = theme_essential_fel_set_color($css, $themecolor, '[[setting:backgroundcolor]]', '#ffffff');
-
-    // Set the theme colour.
-    $themecolorlight    = theme_essential_fel_get_setting('themecolorlight');
-    $css                = theme_essential_fel_set_color($css, $themecolorlight, '[[setting:themecolorlight]]', '#dddddd');
-
-    // Set the theme colour.
-    $themecolordark     = theme_essential_fel_get_setting('themecolordark');
-    $css                = theme_essential_fel_set_color($css, $themecolordark, '[[setting:themecolordark]]', '#30ADD1');
-
-    // Set the theme colour.
-    $themeinfobgcolor     = theme_essential_fel_get_setting('themeinfobgcolor');
-    $css                = theme_essential_fel_set_color($css, $themeinfobgcolor, '[[setting:themeinfobgcolor]]', '#C8E9F2');
-
-    // Set the theme text colour.
-    $themetextcolor     = theme_essential_fel_get_setting('themetextcolor');
-    $css                = theme_essential_fel_set_color($css, $themetextcolor, '[[setting:themetextcolor]]', '#047797');
-
-    // Set the theme text colour.
-    $treeleafcolor     = theme_essential_fel_get_setting('treeleafcolor');
-    $css                = theme_essential_fel_set_color($css, $treeleafcolor, '[[setting:treeleafcolor]]', '#909090');
-
-    // Set the theme url colour.
-    $themeurlcolor      = theme_essential_fel_get_setting('themeurlcolor');
-    $css                = theme_essential_fel_set_color($css, $themeurlcolor, '[[setting:themeurlcolor]]', '#FF5034');
-
-    // Set the theme hover colour.
-    $themehovercolor    = theme_essential_fel_get_setting('themehovercolor');
-    $css                = theme_essential_fel_set_color($css, $themehovercolor, '[[setting:themehovercolor]]', '#F32100');
-
-    // Set the theme icon colour.
-    $themeiconcolor     = theme_essential_fel_get_setting('themeiconcolor');
-    $css                = theme_essential_fel_set_color($css, $themeiconcolor, '[[setting:themeiconcolor]]', '#30ADD1');
-
-    // Set the theme navigation colour.
-    $themenavcolor      = theme_essential_fel_get_setting('themenavcolor');
-    $css                = theme_essential_fel_set_color($css, $themenavcolor, '[[setting:themenavcolor]]', '#ffffff');
-
-    // Set the footer colour.
-    $footercolor        = theme_essential_fel_hex2rgba(theme_essential_fel_get_setting('footercolor'), '0.95');
-    $css                = theme_essential_fel_set_color($css, $footercolor, '[[setting:footercolor]]', '#555555');
-
-    // Set the footer text color.
-    $footertextcolor    = theme_essential_fel_get_setting('footertextcolor');
-    $css                = theme_essential_fel_set_color($css, $footertextcolor, '[[setting:footertextcolor]]', '#bbbbbb');
-
-    // Set the footer heading colour.
-    $footerheadingcolor = theme_essential_fel_get_setting('footerheadingcolor');
-    $css                = theme_essential_fel_set_color($css, $footerheadingcolor, '[[setting:footerheadingcolor]]', '#cccccc');
-
-    // Set the footer separator colour.
-    $footersepcolor     = theme_essential_fel_get_setting('footersepcolor');
-    $css                = theme_essential_fel_set_color($css, $footersepcolor, '[[setting:footersepcolor]]', '#313131');
-
-    // Set the footer URL color.
-    $footerurlcolor     = theme_essential_fel_get_setting('footerurlcolor');
-    $css                = theme_essential_fel_set_color($css, $footerurlcolor, '[[setting:footerurlcolor]]', '#217a94');
-
-    // Set the footer hover colour.
-    $footerhovercolor   = theme_essential_fel_get_setting('footerhovercolor');
-    $css                = theme_essential_fel_set_color($css, $footerhovercolor, '[[setting:footerhovercolor]]', '#30add1');
-
-    // Set the slide background colour.
-    $slidebgcolor       = theme_essential_fel_hex2rgba(theme_essential_fel_get_setting('themecolor'), '.75');
-    $css                = theme_essential_fel_set_color($css, $slidebgcolor, '[[setting:carouselcolor]]', '#30add1');
-
-    // Set the slide active pip colour.
-    $slidebgcolor       = theme_essential_fel_hex2rgba(theme_essential_fel_get_setting('themecolor'), '.25');
-    $css                = theme_essential_fel_set_color($css, $slidebgcolor, '[[setting:carouselactivecolor]]', '#30add1');
-
-    // Set the slide header colour.
-    $slideshowcolor     = theme_essential_fel_get_setting('slideshowcolor');
-    $css                = theme_essential_fel_set_color($css, $slideshowcolor, '[[setting:slideshowcolor]]', '#30add1');
-
-    // Set the slide header colour.
-    $slideheadercolor   = theme_essential_fel_get_setting('slideheadercolor');
-    $css                = theme_essential_fel_set_color($css, $slideheadercolor, '[[setting:slideheadercolor]]', '#30add1');
-
-    // Set the slide text colour.
-    $slidecolor         = theme_essential_fel_get_setting('slidecolor');
-    $css                = theme_essential_fel_set_color($css, $slidecolor, '[[setting:slidecolor]]', '#ffffff');
-
-    // Set the slide button colour.
-    $slidebuttoncolor   = theme_essential_fel_get_setting('slidebuttoncolor');
-    $css                = theme_essential_fel_set_color($css, $slidebuttoncolor, '[[setting:slidebuttoncolor]]', '#30add1');
-
-    // Set the slide button hover colour.
-    $slidebuttonhcolor  = theme_essential_fel_get_setting('slidebuttonhovercolor');
-    $css                = theme_essential_fel_set_color($css, $slidebuttonhcolor, '[[setting:slidebuttonhovercolor]]', '#217a94');
-
-    if ((get_config('theme_essential_fel', 'enablealternativethemecolors1')) ||
-        (get_config('theme_essential_fel', 'enablealternativethemecolors2')) ||
-        (get_config('theme_essential_fel', 'enablealternativethemecolors3'))
-    ) {
-        // Set theme alternative colours.
-        $defaultcolors      = array('#a430d1', '#d15430', '#5dd130');
-        $defaulthovercolors = array('#9929c4', '#c44c29', '#53c429');
-
-        foreach (range(1, 3) as $alternative) {
-            $default        = $defaultcolors[$alternative - 1];
-            $defaulthover   = $defaulthovercolors[$alternative - 1];
-            $css            = theme_essential_fel_set_alternativecolor($css, 'color' . $alternative,
-                                theme_essential_fel_get_setting('alternativethemehovercolor' . $alternative), $default);
-            $css            = theme_essential_fel_set_alternativecolor($css, 'textcolor' . $alternative,
-                                theme_essential_fel_get_setting('alternativethemetextcolor' . $alternative), $default);
-            $css            = theme_essential_fel_set_alternativecolor($css, 'urlcolor' . $alternative,
-                                theme_essential_fel_get_setting('alternativethemeurlcolor' . $alternative), $default);
-            $css            = theme_essential_fel_set_alternativecolor($css, 'hovercolor' . $alternative,
-                                theme_essential_fel_get_setting('alternativethemehovercolor' . $alternative), $defaulthover);
-        }
-    }
-
-    // Set custom CSS.
-    $customcss          = theme_essential_fel_get_setting('customcss');
-    $css                = theme_essential_fel_set_customcss($css, $customcss);
-
-    // Set the background image for the logo.
-    $logo               = $theme->setting_file_url('logo', 'logo');
-    $css                = theme_essential_fel_set_logo($css, $logo);
-
-    // Set the background image for the page.
-    $pagebackground     = $theme->setting_file_url('pagebackground', 'pagebackground');
-    $css                = theme_essential_fel_set_pagebackground($css, $pagebackground);
-
-    // Set the background style for the page.
-    $pagebgstyle        = theme_essential_fel_get_setting('pagebackgroundstyle');
-    $css                = theme_essential_fel_set_pagebackgroundstyle($css, $pagebgstyle);
-
-    // Set Marketing Image Height.
-    $marketingheight    = theme_essential_fel_get_setting('marketingheight');
-    $css                = theme_essential_fel_set_marketingheight($css, $marketingheight);
-
-    // Set Marketing Images.
-    if (theme_essential_fel_get_setting('marketing1image')) {
-        $setting        = 'marketing1image';
-        $marketingimage = $theme->setting_file_url($setting, $setting);
-        $css            = theme_essential_fel_set_marketingimage($css, $marketingimage, $setting);
-    }
-
-    if (theme_essential_fel_get_setting('marketing2image')) {
-        $setting        = 'marketing2image';
-        $marketingimage = $theme->setting_file_url($setting, $setting);
-        $css            = theme_essential_fel_set_marketingimage($css, $marketingimage, $setting);
-    }
-
-    if (theme_essential_fel_get_setting('marketing3image')) {
-        $setting        = 'marketing3image';
-        $marketingimage = $theme->setting_file_url($setting, $setting);
-        $css            = theme_essential_fel_set_marketingimage($css, $marketingimage, $setting);
-    }
-
-    // Set FontAwesome font loading path
-    $css                = theme_essential_fel_set_fontwww($css);
-
-    // Set customlabel overrides.
+function theme_essential_fel_serve_css($filename, $theme = 'essential_fel') {
     global $CFG;
-    if (file_exists($CFG->dirroot.'/mod/customlabel/xlib.php')) {
-        include_once($CFG->dirroot.'/mod/customlabel/xlib.php');
-        $css = theme_set_customlabelcss($css);
-    }
 
-    // Finally return processed CSS
-    return $css;
-}
-
-/**
- * Adds the JavaScript for the colour switcher to the page.
- *
- * The colour switcher is a YUI moodle module that is located in
- *     theme/udemspl/yui/udemspl/udemspl.js
- *
- * @param moodle_page $page
- */
-function theme_essential_fel_initialise_colourswitcher(moodle_page $page)
-{
-    user_preference_allow_ajax_update('theme_essential_fel_colours', PARAM_ALPHANUM);
-    $page->requires->yui_module(
-        'moodle-theme_essential_fel-coloursswitcher',
-        'M.theme_essential_fel.initColoursSwitcher',
-        array(array('div' => '.dropdown-menu'))
-    );
-}
-
-/**
- * Gets the theme colours the user has selected if enabled or the default if they have never changed
- *
- * @param string $default The default theme colors to use
- * @return string The theme colours the user has selected
- */
-function theme_essential_fel_get_colours($default = 'default')
-{
-    $preference = get_user_preferences('theme_essential_fel_colours', $default);
-    foreach (range(1, 3) as $alternativethemenumber) {
-        if ($preference == 'alternative' . $alternativethemenumber && theme_essential_fel_get_setting('enablealternativethemecolors' . $alternativethemenumber)) {
-            return $preference;
-        }
-    }
-    return $default;
-}
-
-/**
- * Checks if the user is switching colours with a refresh
- *
- * If they are this updates the users preference in the database
- */
-function theme_essential_fel_check_colours_switch()
-{
-    $colours = optional_param('essential_felcolours', null, PARAM_ALPHANUM);
-    if (in_array($colours, array('default', 'alternative1', 'alternative2', 'alternative3'))) {
-        set_user_preference('theme_essential_fel_colours', $colours);
-    }
-}
-
-
-function theme_essential_fel_set_headingfont($css, $headingfont)
-{
-    $tag = '[[setting:headingfont]]';
-    $replacement = $headingfont;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_set_bodyfont($css, $bodyfont)
-{
-    $tag = '[[setting:bodyfont]]';
-    $replacement = $bodyfont;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_set_fontfiles($css, $type, $fontname, $theme)
-{
-    $tag = '[[setting:fontfiles'.$type.']]';
-    $replacement = '';
-    if(theme_essential_fel_get_setting('fontselect') === '3') {
-        $fontfilettf  = $theme->setting_file_url('fontfilettf'.$type, 'fontfilettf'.$type);
-        $replacement  = '@font-face {font-family: "'.$fontname.'";';
-        $replacement .= !empty($fontfilettf)? "src: url('".$fontfilettf."');" : '';
-        $replacement .= "}";
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_set_color($css, $themecolor, $tag, $default)
-{
-    if (!($themecolor)) {
-        $replacement = $default;
+    if (file_exists($CFG->dirroot.'/theme/'.$theme.'/style/')) {
+        $thestylepath = $CFG->dirroot.'/theme/'.$theme.'/style/';
+    } else if (!empty($CFG->themedir) && file_exists($CFG->themedir.'/'.$theme.'/style/')) {
+        $thestylepath = $CFG->themedir . '/'.$theme.'/style/';
     } else {
-        $replacement = $themecolor;
+        header('HTTP/1.0 404 Not Found');
+        die('Essential style folder not found, check $CFG->themedir is correct.');
     }
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
+    $thesheet = $thestylepath . $filename;
 
-function theme_essential_fel_set_alternativecolor($css, $type, $customcolor, $defaultcolor)
-{
-    $tag = '[[setting:alternativetheme' . $type . ']]';
-    if (!($customcolor)) {
-        $replacement = $defaultcolor;
-    } else {
-        $replacement = $customcolor;
+    /* http://css-tricks.com/snippets/php/intelligent-php-cache-control/ - rather than /lib/csslib.php as it is a static file who's
+      contents should only change if it is rebuilt.  But! There should be no difference with TDM on so will see for the moment if
+      that decision is a factor. */
+
+    $etagfile = md5_file($thesheet);
+    // File.
+    $lastmodified = filemtime($thesheet);
+    // Header.
+    $ifmodifiedsince = (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false);
+    $etagheader = (isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false);
+
+    if ((($ifmodifiedsince) && (strtotime($ifmodifiedsince) == $lastmodified)) || $etagheader == $etagfile) {
+        theme_essential_fel_send_unmodified($lastmodified, $etagfile);
     }
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
+    theme_essential_fel_send_cached_css($thestylepath, $filename, $lastmodified, $etagfile);
 }
 
-function theme_essential_fel_set_pagebackground($css, $pagebackground)
-{
-    $tag = '[[setting:pagebackground]]';
-    $replacement = $pagebackground;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_set_pagebackgroundstyle($css, $style)
-{
-    $tagattach = '[[setting:backgroundattach]]';
-    $tagrepeat = '[[setting:backgroundrepeat]]';
-    $tagsize = '[[setting:backgroundsize]]';
-    $replacementattach = 'fixed';
-    $replacementrepeat = 'no-repeat';
-    $replacementsize = 'cover';
-    if ($style === 'tiled') {
-        $replacementrepeat = 'repeat';
-        $replacementsize = 'initial';
-    } else if ($style === 'stretch') {
-        $replacementattach = 'scroll';
+function theme_essential_fel_send_unmodified($lastmodified, $etag) {
+    $lifetime = 60 * 60 * 24 * 60;
+    header('HTTP/1.1 304 Not Modified');
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $lifetime) . ' GMT');
+    header('Cache-Control: public, max-age=' . $lifetime);
+    header('Content-Type: text/css; charset=utf-8');
+    header('Etag: "' . $etag . '"');
+    if ($lastmodified) {
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastmodified) . ' GMT');
     }
-
-    $css = str_replace($tagattach, $replacementattach, $css);
-    $css = str_replace($tagrepeat, $replacementrepeat, $css);
-    $css = str_replace($tagsize, $replacementsize, $css);
-    return $css;
+    die;
 }
 
-function theme_essential_fel_set_marketingheight($css, $marketingheight)
-{
-    $tag = '[[setting:marketingheight]]';
-    $replacement = $marketingheight;
-    if (!($replacement)) {
-        $replacement = 100;
-    }
-    $css = str_replace($tag, $replacement . 'px', $css);
-    return $css;
-}
-
-function theme_essential_fel_set_marketingimage($css, $marketingimage, $setting)
-{
-    $tag = '[[setting:' . $setting . ']]';
-    $replacement = $marketingimage;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_essential_fel_showslider($setting)
-{
+function theme_essential_fel_send_cached_css($path, $filename, $lastmodified, $etag) {
     global $CFG;
-    $noslides = theme_essential_fel_get_setting($setting);
-    if ($noslides && (intval($CFG->version) >= 2013111800)) {
-        $devicetype = core_useragent::get_device_type(); // In moodlelib.php.
-        if (($devicetype == "mobile") && theme_essential_fel_get_setting('hideonphone')) {
-            $noslides = false;
-        } else if (($devicetype == "tablet") && theme_essential_fel_get_setting('hideontablet')) {
-            $noslides = false;
-        }
+    require_once($CFG->dirroot . '/lib/configonlylib.php'); // For min_enable_zlib_compression().
+    // 60 days only - the revision may get incremented quite often.
+    $lifetime = 60 * 60 * 24 * 60;
+
+    header('Etag: "' . $etag . '"');
+    header('Content-Disposition: inline; filename="' . $filename . '"');
+    if ($lastmodified) {
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastmodified) . ' GMT');
     }
-    return $noslides;
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $lifetime) . ' GMT');
+    header('Pragma: ');
+    header('Cache-Control: public, max-age=' . $lifetime);
+    header('Accept-Ranges: none');
+    header('Content-Type: text/css; charset=utf-8');
+    if (!min_enable_zlib_compression()) {
+        header('Content-Length: ' . filesize($path . $filename));
+    }
+
+    readfile($path . $filename);
+    die;
 }
 
-function theme_essential_fel_get_nav_links($course, $sections, $sectionno)
-{
-    // FIXME: This is really evil and should by using the navigation API.
-    $course = course_get_format($course)->get_course();
-    $previousarrow = '<i class="fa fa-chevron-circle-left"></i>';
-    $nextarrow = '<i class="fa fa-chevron-circle-right"></i>';
-    $canviewhidden = has_capability('moodle/course:viewhiddensections', context_course::instance($course->id))
-    or !$course->hiddensections;
-
-    $links = array('previous' => '', 'next' => '');
-    $back = $sectionno - 1;
-    while ($back > 0 and empty($links['previous'])) {
-        if ($canviewhidden || $sections[$back]->uservisible) {
-            $params = array('id' => 'previous_section');
-            if (!$sections[$back]->visible) {
-                $params = array('class' => 'dimmed_text');
-            }
-            $previouslink = html_writer::start_tag('div', array('class' => 'nav_icon'));
-            $previouslink .= $previousarrow;
-            $previouslink .= html_writer::end_tag('div');
-            $previouslink .= html_writer::start_tag('span', array('class' => 'text'));
-            $previouslink .= html_writer::start_tag('span', array('class' => 'nav_guide'));
-            $previouslink .= get_string('previoussection', 'theme_essential_fel');
-            $previouslink .= html_writer::end_tag('span');
-            $previouslink .= html_writer::empty_tag('br');
-            $previouslink .= get_section_name($course, $sections[$back]);
-            $previouslink .= html_writer::end_tag('span');
-            $links['previous'] = html_writer::link(course_get_url($course, $back), $previouslink, $params);
-        }
-        $back--;
-    }
-
-    $forward = $sectionno + 1;
-    while ($forward <= $course->numsections and empty($links['next'])) {
-        if ($canviewhidden || $sections[$forward]->uservisible) {
-            $params = array('id' => 'next_section');
-            if (!$sections[$forward]->visible) {
-                $params = array('class' => 'dimmed_text');
-            }
-            $nextlink = html_writer::start_tag('div', array('class' => 'nav_icon'));
-            $nextlink .= $nextarrow;
-            $nextlink .= html_writer::end_tag('div');
-            $nextlink .= html_writer::start_tag('span', array('class' => 'text'));
-            $nextlink .= html_writer::start_tag('span', array('class' => 'nav_guide'));
-            $nextlink .= get_string('nextsection', 'theme_essential_fel');
-            $nextlink .= html_writer::end_tag('span');
-            $nextlink .= html_writer::empty_tag('br');
-            $nextlink .= get_section_name($course, $sections[$forward]);
-            $nextlink .= html_writer::end_tag('span');
-            $links['next'] = html_writer::link(course_get_url($course, $forward), $nextlink, $params);
-        }
-        $forward++;
-    }
-
-    return $links;
-}
-
-function theme_essential_fel_print_single_section_page(&$that, &$courserenderer, $course, $sections, $mods, $modnames, $modnamesused, $displaysection)
-{
+function theme_essential_fel_process_css($css, $theme) {
     global $PAGE;
 
-    $modinfo = get_fast_modinfo($course);
-    $course = course_get_format($course)->get_course();
+    $outputus = $PAGE->get_renderer('theme_'.$PAGE->theme->name, 'core');
+    \theme_essential_fel\toolbox::set_core_renderer($outputus);
 
-    // Can we view the section in question?
-    if (!($sectioninfo = $modinfo->get_section_info($displaysection))) {
-        // This section doesn't exist
-        print_error('unknowncoursesection', 'error', null, $course->fullname);
-        return false;
-    }
+    // Set the theme width.
+    $pagewidth = \theme_essential_fel\toolbox::get_setting('pagewidth');
+    $css = \theme_essential_fel\toolbox::set_pagewidth($css, $pagewidth);
 
-    if (!$sectioninfo->uservisible) {
-        if (!$course->hiddensections) {
-            echo $that->start_section_list();
-            echo $that->section_hidden($displaysection);
-            echo $that->end_section_list();
+    // Set the theme font.
+    $css = \theme_essential_fel\toolbox::set_font($css, 'heading', \theme_essential_fel\toolbox::get_setting('fontnameheading'));
+    $css = \theme_essential_fel\toolbox::set_font($css, 'body', \theme_essential_fel\toolbox::get_setting('fontnamebody'));
+
+    // Set the theme colour.
+    $themecolor = \theme_essential_fel\toolbox::get_setting('themecolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themecolor, '[[setting:themecolor]]', '#30add1');
+
+    // Input focus colour.
+    $css = \theme_essential_fel\toolbox::set_color($css, $themecolor, '[[setting:inputfocusbordercolor]]', '#30add1', '0.8');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themecolor, '[[setting:inputfocusshadowcolor]]', '#30add1', '0.6');
+
+    // Set the theme text colour.
+    $themetextcolor = \theme_essential_fel\toolbox::get_setting('themetextcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themetextcolor, '[[setting:themetextcolor]]', '#047797');
+
+    // Set the theme url colour.
+    $themeurlcolor = \theme_essential_fel\toolbox::get_setting('themeurlcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themeurlcolor, '[[setting:themeurlcolor]]', '#FF5034');
+
+    // Set the theme hover colour.
+    $themehovercolor = \theme_essential_fel\toolbox::get_setting('themehovercolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themehovercolor, '[[setting:themehovercolor]]', '#F32100');
+
+    // Set the theme header text colour.
+    $themetextcolor = \theme_essential_fel\toolbox::get_setting('headertextcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themetextcolor, '[[setting:headertextcolor]]', '#217a94');
+
+    // Set the theme icon colour.
+    $themeiconcolor = \theme_essential_fel\toolbox::get_setting('themeiconcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themeiconcolor, '[[setting:themeiconcolor]]', '#30add1');
+
+    // Set the theme default button text colour.
+    $themedefaultbuttontextcolour = \theme_essential_fel\toolbox::get_setting('themedefaultbuttontextcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttontextcolour,
+        '[[setting:themedefaultbuttontextcolour]]', '#ffffff');
+
+    // Set the theme default button text hover colour.
+    $themedefaultbuttontexthovercolour = \theme_essential_fel\toolbox::get_setting('themedefaultbuttontexthovercolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttontexthovercolour,
+        '[[setting:themedefaultbuttontexthovercolour]]', '#ffffff');
+
+    // Set the theme default button background colour.
+    $themedefaultbuttonbackgroundcolour = \theme_essential_fel\toolbox::get_setting('themedefaultbuttonbackgroundcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttonbackgroundcolour,
+        '[[setting:themedefaultbuttonbackgroundcolour]]', '#30add1');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttonbackgroundcolour,
+        '[[setting:themedefaultbuttonbackgroundcolourimage]]', '#30add1');
+    $css = \theme_essential_fel\toolbox::set_color($css,
+        \theme_essential_fel\toolbox::hexadjust($themedefaultbuttonbackgroundcolour, 10),
+        '[[setting:themedefaultbuttonbackgroundcolourrgba]]', '#30add1', '0.25');
+
+    // Set the theme default button background hover colour.
+    $themedefaultbuttonbackgroundhovercolour = \theme_essential_fel\toolbox::get_setting('themedefaultbuttonbackgroundhovercolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttonbackgroundhovercolour,
+        '[[setting:themedefaultbuttonbackgroundhovercolour]]', '#3ad4ff');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themedefaultbuttonbackgroundhovercolour,
+        '[[setting:themedefaultbuttonbackgroundhovercolourimage]]', '#3ad4ff');
+    $css = \theme_essential_fel\toolbox::set_color($css,
+        \theme_essential_fel\toolbox::hexadjust($themedefaultbuttonbackgroundhovercolour, 10),
+        '[[setting:themedefaultbuttonbackgroundhovercolourrgba]]', '#3ad4ff', '0.25');
+
+    // Set the theme navigation colour.
+    $themenavcolor = \theme_essential_fel\toolbox::get_setting('themenavcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themenavcolor, '[[setting:themenavcolor]]', '#ffffff');
+
+    // Set the theme stripe text colour.
+    $themestripetextcolour = \theme_essential_fel\toolbox::get_setting('themestripetextcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themestripetextcolour, '[[setting:themestripetextcolour]]', '#ffffff');
+
+    // Set the theme stripe background colour.
+    $themestripebackgroundcolour = \theme_essential_fel\toolbox::get_setting('themestripebackgroundcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themestripebackgroundcolour, '[[setting:themestripebackgroundcolour]]', '#ff9a34');
+
+    $themestripeurlcolour = \theme_essential_fel\toolbox::get_setting('themestripeurlcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $themestripeurlcolour, '[[setting:themestripeurlcolour]]', '#25849F');
+
+    // Enrolled and not accessed course background colour.
+    $mycoursesorderenrolbackcolour = \theme_essential_fel\toolbox::get_setting('mycoursesorderenrolbackcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $mycoursesorderenrolbackcolour,
+        '[[setting:mycoursesorderenrolbackcolour]]', '#a3ebff');
+
+    // Set the footer colour.
+    $footercolor = \theme_essential_fel\toolbox::get_setting('footercolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footercolor, '[[setting:footercolor]]', '#30add1', '0.95');
+
+    // Set the footer text colour.
+    $footertextcolor = \theme_essential_fel\toolbox::get_setting('footertextcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footertextcolor, '[[setting:footertextcolor]]', '#ffffff');
+
+    // Set the footer block background colour.
+    $footerheadingcolor = \theme_essential_fel\toolbox::get_setting('footerblockbackgroundcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerheadingcolor, '[[setting:footerblockbackgroundcolour]]',
+                    '#cccccc');
+
+    // Set the footer block heading colour.
+    $footerheadingcolor = \theme_essential_fel\toolbox::get_setting('footerheadingcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerheadingcolor, '[[setting:footerheadingcolor]]', '#cccccc');
+
+    // Set the footer text colour.
+    $footertextcolor = \theme_essential_fel\toolbox::get_setting('footerblocktextcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footertextcolor, '[[setting:footerblocktextcolour]]', '#000000');
+
+    // Set the footer block URL colour.
+    $footerurlcolor = \theme_essential_fel\toolbox::get_setting('footerblockurlcolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerurlcolor, '[[setting:footerblockurlcolour]]', '#000000');
+
+    // Set the footer block hover colour.
+    $footerhovercolor = \theme_essential_fel\toolbox::get_setting('footerblockhovercolour');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerhovercolor, '[[setting:footerblockhovercolour]]', '#555555');
+
+    // Set the footer separator colour.
+    $footersepcolor = \theme_essential_fel\toolbox::get_setting('footersepcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footersepcolor, '[[setting:footersepcolor]]', '#313131');
+
+    // Set the footer URL colour.
+    $footerurlcolor = \theme_essential_fel\toolbox::get_setting('footerurlcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerurlcolor, '[[setting:footerurlcolor]]', '#cccccc');
+
+    // Set the footer hover colour.
+    $footerhovercolor = \theme_essential_fel\toolbox::get_setting('footerhovercolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $footerhovercolor, '[[setting:footerhovercolor]]', '#bbbbbb');
+
+    // Set the slide header colour.
+    $slideshowcolor = \theme_essential_fel\toolbox::get_setting('slideshowcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slideshowcolor, '[[setting:slideshowcolor]]', '#30add1');
+
+    // Set the slide header colour.
+    $slideheadercolor = \theme_essential_fel\toolbox::get_setting('slideheadercolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slideheadercolor, '[[setting:slideheadercolor]]', '#30add1');
+
+    // Set the slide caption text colour.
+    $slidecaptiontextcolor = \theme_essential_fel\toolbox::get_setting('slidecaptiontextcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slidecaptiontextcolor, '[[setting:slidecaptiontextcolor]]',
+                    '#ffffff');
+
+    // Set the slide caption background colour.
+    $slidecaptionbackgroundcolor = \theme_essential_fel\toolbox::get_setting('slidecaptionbackgroundcolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slidecaptionbackgroundcolor,
+                    '[[setting:slidecaptionbackgroundcolor]]', '#30add1');
+
+    // Set the slide button colour.
+    $slidebuttoncolor = \theme_essential_fel\toolbox::get_setting('slidebuttoncolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slidebuttoncolor, '[[setting:slidebuttoncolor]]', '#30add1');
+
+    // Set the slide button hover colour.
+    $slidebuttonhcolor = \theme_essential_fel\toolbox::get_setting('slidebuttonhovercolor');
+    $css = \theme_essential_fel\toolbox::set_color($css, $slidebuttonhcolor, '[[setting:slidebuttonhovercolor]]', '#217a94');
+
+    if ((\theme_essential_fel\toolbox::get_setting('enablealternativethemecolors1')) ||
+            (\theme_essential_fel\toolbox::get_setting('enablealternativethemecolors2')) ||
+            (\theme_essential_fel\toolbox::get_setting('enablealternativethemecolors3')) ||
+            (\theme_essential_fel\toolbox::get_setting('enablealternativethemecolors4'))
+    ) {
+        // Set theme alternative colours.
+        $defaultcolors = array('#a430d1', '#d15430', '#5dd130', '#006b94');
+        $defaulthovercolors = array('#9929c4', '#c44c29', '#53c429', '#4090af');
+        $defaultstripetextcolors = array('#bdfdb7', '#c3fdd0', '#9f5bfb', '#ff1ebd');
+        $defaultstripebackgroundcolors = array('#c1009f', '#bc2800', '#b4b2fd', '#0336b4');
+        $defaultstripeurlcolors = array('#bef500', '#30af67', '#ffe9a6', '#ffab00');
+
+        foreach (range(1, 4) as $alternative) {
+            $default = $defaultcolors[$alternative - 1];
+            $defaulthover = $defaulthovercolors[$alternative - 1];
+            $defaultstripetext = $defaultstripetextcolors[$alternative - 1];
+            $defaultstripebackground = $defaultstripebackgroundcolors[$alternative - 1];
+            $defaultstripeurl = $defaultstripeurlcolors[$alternative - 1];
+            $alternativethemecolour = \theme_essential_fel\toolbox::get_setting('alternativethemecolor'.$alternative);
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'color'.$alternative,
+                $alternativethemecolour, $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'inputfocusbordercolor'.$alternative,
+                $alternativethemecolour, $default, '0.8');
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'inputfocusshadowcolor'.$alternative,
+                $alternativethemecolour, $default, '0.6');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'textcolor'.$alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemetextcolor'.$alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'urlcolor'.$alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeurlcolor'.$alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttontextcolour'.$alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemedefaultbuttontextcolour'.$alternative),
+                '#ffffff');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttontexthovercolour'.$alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemedefaultbuttontexthovercolour'.$alternative),
+                '#ffffff');
+
+            $alternativethemedefaultbuttonbackgroundcolour = \theme_essential_fel\toolbox::get_setting(
+                'alternativethemedefaultbuttonbackgroundcolour'.$alternative);
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundcolour'.$alternative,
+                $alternativethemedefaultbuttonbackgroundcolour,
+                '#30add1');
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundcolourimage'.$alternative,
+                $alternativethemedefaultbuttonbackgroundcolour,
+                '#30add1');
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundcolourrgba'.$alternative,
+                \theme_essential_fel\toolbox::hexadjust($alternativethemedefaultbuttonbackgroundcolour, 10),
+                '#30add1', '0.25');
+
+            $alternativethemedefaultbuttonbackgroundhovercolour = \theme_essential_fel\toolbox::get_setting(
+                'alternativethemedefbuttonbackgroundhvrcolour'.$alternative);
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundhovercolour'.$alternative,
+                $alternativethemedefaultbuttonbackgroundhovercolour,
+                '#3ad4ff');
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundhovercolourimage'.$alternative,
+                $alternativethemedefaultbuttonbackgroundhovercolour,
+                '#3ad4ff');
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'defaultbuttonbackgroundhovercolourrgba'.$alternative,
+                \theme_essential_fel\toolbox::hexadjust($alternativethemedefaultbuttonbackgroundhovercolour, 10),
+                '#3ad4ff', '0.25');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'iconcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeiconcolor' . $alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'navcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemenavcolor' . $alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'hovercolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemehovercolor' . $alternative), $defaulthover);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'stripetextcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemestripetextcolour' . $alternative), $defaultstripetext);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'stripebackgroundcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemestripebackgroundcolour' . $alternative), $defaultstripebackground);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'stripeurlcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemestripeurlcolour' . $alternative), $defaultstripeurl);
+
+            $alternativethememycoursesorderenrolbackcolour = \theme_essential_fel\toolbox::get_setting(
+                'alternativethememycoursesorderenrolbackcolour'.$alternative);
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'mycoursesorderenrolbackcolour'.$alternative,
+                $alternativethememycoursesorderenrolbackcolour, '#a3ebff');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footercolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefootercolor' . $alternative), '#30add1');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footertextcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefootertextcolor' . $alternative), '#30add1');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerblockbackgroundcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterblockbackgroundcolour' . $alternative), '#cccccc');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerblocktextcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterblocktextcolour' . $alternative), '#000000');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerblockurlcolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterblockurlcolour' . $alternative), '#000000');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerblockhovercolour' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterblockhovercolour' . $alternative), '#555555');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerheadingcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterheadingcolor' . $alternative), '#cccccc');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footersepcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefootersepcolor' . $alternative), '#313131');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerurlcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterurlcolor' . $alternative), '#cccccc');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'footerhovercolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemefooterhovercolor' . $alternative), '#bbbbbb');
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'slidecaptiontextcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeslidecaptiontextcolor' . $alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'slidecaptionbackgroundcolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeslidecaptionbackgroundcolor' . $alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'slidebuttoncolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeslidebuttoncolor' . $alternative), $default);
+
+            $css = \theme_essential_fel\toolbox::set_alternativecolor($css, 'slidebuttonhovercolor' . $alternative,
+                \theme_essential_fel\toolbox::get_setting('alternativethemeslidebuttonhovercolor' . $alternative), $defaulthover);
         }
-        // Can't view this section.
-        return false;
     }
 
-    // Copy activity clipboard..
-    echo $that->course_activity_clipboard($course, $displaysection);
-    $thissection = $modinfo->get_section_info(0);
-    if ($thissection->summary or !empty($modinfo->sections[0]) or $PAGE->user_is_editing()) {
-        echo $that->start_section_list();
-        echo $that->section_header($thissection, $course, true, $displaysection);
-        echo $courserenderer->course_section_cm_list($course, $thissection, $displaysection);
-        echo $courserenderer->course_section_add_cm_control($course, 0, $displaysection);
-        echo $that->section_footer();
-        echo $that->end_section_list();
-    }
+    // Set the background image for the logo.
+    $logo = \theme_essential_fel\toolbox::setting_file_url('logo', 'logo');
+    $css = \theme_essential_fel\toolbox::set_logo($css, $logo);
 
-    // Start single-section div
-    echo html_writer::start_tag('div', array('class' => 'single-section'));
+    // Set the logo width and height.
+    $logowidth = \theme_essential_fel\toolbox::get_setting('logowidth');
+    $logoheight = \theme_essential_fel\toolbox::get_setting('logoheight');
+    $css = \theme_essential_fel\toolbox::set_logodimensions($css, $logowidth, $logoheight);
 
-    // The requested section page.
-    $thissection = $modinfo->get_section_info($displaysection);
+    // Set the background image for the header.
+    $headerbackground = \theme_essential_fel\toolbox::setting_file_url('headerbackground', 'headerbackground');
+    $css = \theme_essential_fel\toolbox::set_headerbackground($css, $headerbackground);
 
-    // Title with section navigation links.
-    $sectionnavlinks = $that->get_nav_links($course, $modinfo->get_section_info_all(), $displaysection);
+    // Set the background image for the page.
+    $pagebackground = \theme_essential_fel\toolbox::setting_file_url('pagebackground', 'pagebackground');
+    $css = \theme_essential_fel\toolbox::set_pagebackground($css, $pagebackground);
 
-    // Construct navigation links
-    $sectionnav = html_writer::start_tag('nav', array('class' => 'section-navigation'));
-    $sectionnav .= $sectionnavlinks['previous'];
-    $sectionnav .= $sectionnavlinks['next'];
-    $sectionnav .= html_writer::empty_tag('br', array('style' => 'clear:both'));
-    $sectionnav .= html_writer::end_tag('nav');
-    $sectionnav .= html_writer::tag('div', '', array('class' => 'bor'));
+    // Set the background style for the page.
+    $pagebgstyle = \theme_essential_fel\toolbox::get_setting('pagebackgroundstyle');
+    $css = \theme_essential_fel\toolbox::set_pagebackgroundstyle($css, $pagebgstyle);
 
-    // Output Section Navigation
-    echo $sectionnav;
+    // Set the background image for the login page.
+    $loginbackground = \theme_essential_fel\toolbox::setting_file_url('loginbackground', 'loginbackground');
+    $css = \theme_essential_fel\toolbox::set_loginbackground($css, $loginbackground);
 
-    // Define the Section Title
-    $sectiontitle = '';
-    $sectiontitle .= html_writer::start_tag('div', array('class' => 'section-title'));
-    // Title attributes
-    $titleattr = 'title';
-    if (!$thissection->visible) {
-        $titleattr .= ' dimmed_text';
-    }
-    $sectiontitle .= html_writer::start_tag('h3', array('class' => $titleattr));
-    $sectiontitle .= get_section_name($course, $displaysection);
-    $sectiontitle .= html_writer::end_tag('h3');
-    $sectiontitle .= html_writer::end_tag('div');
+    // Set the background style for the login page.
+    $loginbgstyle = \theme_essential_fel\toolbox::get_setting('loginbackgroundstyle');
+    $loginbgopacity = \theme_essential_fel\toolbox::get_setting('loginbackgroundopacity');
+    $css = \theme_essential_fel\toolbox::set_loginbackgroundstyle($css, $loginbgstyle, $loginbgopacity);
 
-    // Output the Section Title.
-    echo $sectiontitle;
+    // Set marketing height.
+    $marketingheight = \theme_essential_fel\toolbox::get_setting('marketingheight');
+    $marketingimageheight = \theme_essential_fel\toolbox::get_setting('marketingimageheight');
+    $css = \theme_essential_fel\toolbox::set_marketingheight($css, $marketingheight, $marketingimageheight);
 
-    // Now the list of sections..
-    echo $that->start_section_list();
+    // Set marketing images.
+    $setting = 'marketing1image';
+    $marketingimage = \theme_essential_fel\toolbox::setting_file_url($setting, $setting);
+    $css = \theme_essential_fel\toolbox::set_marketingimage($css, $marketingimage, $setting);
 
-    echo $that->section_header($thissection, $course, true, $displaysection);
+    $setting = 'marketing2image';
+    $marketingimage = \theme_essential_fel\toolbox::setting_file_url($setting, $setting);
+    $css = \theme_essential_fel\toolbox::set_marketingimage($css, $marketingimage, $setting);
 
-    // Show completion help icon.
-    $completioninfo = new completion_info($course);
-    echo $completioninfo->display_help_icon();
+    $setting = 'marketing3image';
+    $marketingimage = \theme_essential_fel\toolbox::setting_file_url($setting, $setting);
+    $css = \theme_essential_fel\toolbox::set_marketingimage($css, $marketingimage, $setting);
 
-    echo $courserenderer->course_section_cm_list($course, $thissection, $displaysection);
-    echo $courserenderer->course_section_add_cm_control($course, $displaysection, $displaysection);
-    echo $that->section_footer();
-    echo $that->end_section_list();
+    // Category course title images.
+    $css = \theme_essential_fel\toolbox::set_categorycoursetitleimages($css);
 
-    // Close single-section div.
-    echo html_writer::end_tag('div');
+    // Set custom CSS.
+    $customcss = \theme_essential_fel\toolbox::get_setting('customcss');
+    $css = \theme_essential_fel\toolbox::set_customcss($css, $customcss);
+
+    // Add extra cm module width control.
+    if (!empty($theme->settings->modfixedthumbwidth)) {
+        $picturewidth = $theme->settings->modfixedthumbwidth;
+        $labelwidth = 100 - $picturewidth;
+
+        $thumbcss = "
+.cm-picture {
+    width: {$picturewidth}%;
+    min-width: {$picturewidth}%;
+    max-width: {$picturewidth}%;
 }
 
-function theme_essential_fel_render_slide($i)
-{
-    global $PAGE, $OUTPUT;
+.cm-label {
+    min-width: {$labelwidth}%;
+    max-width: {$labelwidth}%;
+}
 
-    $slideurl           = theme_essential_fel_get_setting('slide'.$i.'url');
-    $slideurltarget     = theme_essential_fel_get_setting('slide'.$i.'target');
-    $slidetitle         = theme_essential_fel_get_setting('slide'.$i, true);
-    $slidecaption       = theme_essential_fel_get_setting('slide'.$i.'caption', true);
-    $slideextraclass    = ($i === 1)? 'active' : '';
-    $slideimagealt      = strip_tags(theme_essential_fel_get_setting('slide'.$i, true));
-    $slideimage         = $OUTPUT->pix_url('default_slide', 'theme');
+.cm-picture img {
+    width: 100%;
+}
+        ";
 
-    // Get slide image or fallback to default
-    if (theme_essential_fel_get_setting('slide'.$i.'image')) {
-        $slideimage     = $PAGE->theme->setting_file_url('slide'.$i.'image', 'slide'.$i.'image');
-    }
-
-    if($slideurl) {
-        $slide = '<a href="'.$slideurl.'" target="'.$slideurltarget.'" class="item '.$slideextraclass.'">';
+        $css = str_replace('[[setting:modfixedthumbcss]]', $thumbcss, $css);
     } else {
-        $slide = '<div class="item '.$slideextraclass.'">';
-    }
-    $slide .= '<img src="'.$slideimage.'" alt="'.$slideimagealt.'" class="carousel-image"/>';
-
-    // Output title and caption if either is present
-    if ($slidetitle || $slidecaption) {
-        $slide .= '<div class="carousel-caption">';
-        $slide .= '<div class="carousel-caption-inner">';
-        $slide .= '<h4>'.$slidetitle.'</h4>';
-        $slide .= '<p>'.$slidecaption.'</p>';
-        $slide .= '</div>';
-        $slide .= '</div>';
+        $css = str_replace('[[setting:modfixedthumbcss]]', '', $css);
     }
 
-    $slide .= ($slideurl)? '</a>' : '</div>';
-
-    return $slide;
-}
-
-function theme_essential_fel_page_init(moodle_page $page)
-{
-    global $CFG;
-    $page->requires->jquery();
-    if (core_useragent::check_ie_version() && !core_useragent::check_ie_version('9.0')) {
-        $page->requires->jquery_plugin('html5shiv', 'theme_essential_fel');
-    }
-    $page->requires->jquery_plugin('bootstrap', 'theme_essential_fel');
-    $page->requires->jquery_plugin('breadcrumb', 'theme_essential_fel');
-    $page->requires->jquery_plugin('fitvids', 'theme_essential_fel');
+    // Finally return processed CSS.
+    return $css;
 }

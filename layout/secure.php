@@ -15,65 +15,67 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This is built using the bootstrapbase template to allow for new theme's using
- * Moodle's new Bootstrap theme engine
+ * Essential is a clean and customizable theme.
  *
  * @package     theme_essential_fel
- * @copyright   2013 Julian Ridden
+ * @copyright   2016 Gareth J Barnard
  * @copyright   2014 Gareth J Barnard, David Bezemer
+ * @copyright   2013 Julian Ridden
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/includes/pagesettings.php');
+require_once(\theme_essential_fel\toolbox::get_tile_file('additionaljs'));
+require_once(\theme_essential_fel\toolbox::get_tile_file('pagesettings'));
 
-echo $OUTPUT->doctype() ?>
+echo $OUTPUT->doctype();
+?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>"/>
-    <?php echo $OUTPUT->standard_head_html() ?>
+    <?php
+    echo $OUTPUT->standard_head_html();
+    ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google web fonts -->
+    <?php require_once(\theme_essential_fel\toolbox::get_tile_file('fonts')); ?>
+    <!-- Start Analytics -->
+    <?php require_once(\theme_essential_fel\toolbox::get_tile_file('analytics')); ?>
+    <!-- End Analytics -->
 </head>
 
 <body <?php echo $OUTPUT->body_attributes($bodyclasses); ?>>
 
-<?php echo $OUTPUT->standard_top_of_body_html() ?>
+<?php echo $OUTPUT->standard_top_of_body_html(); ?>
 
 <header role="banner" class="navbar navbar-fixed-top">
     <nav role="navigation" class="navbar-inner">
         <div class="container-fluid">
-            <a class="brand" href="<?php echo $CFG->wwwroot; ?>"><?php echo $SITE->shortname; ?></a>
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-
-            <div class="nav-collapse collapse">
-                <ul class="nav pull-right">
-                    <li><?php echo $OUTPUT->page_heading_menu(); ?></li>
-                </ul>
-            </div>
+            <a class="brand" href="<?php echo preg_replace("(https?:)", "", $CFG->wwwroot); ?>"><?php echo $SITE->shortname; ?></a>
         </div>
     </nav>
 </header>
 
 <div id="page" class="container-fluid">
-    <section role="main-content">
-        <div id="page-content" class="row-fluid">
-            <div id="region-bs-main-and-pre" class="span9">
-                <div class="row-fluid">
-                    <section id="region-main" class="span8 pull-right">
+    <div id="page-content" class="row-fluid">
+        <div id="region-bs-main-and-pre" class="span9">
+            <div class="row-fluid">
+                <div id="content" class="span8 pull-right">
+                    <section id="region-main">
                         <?php echo $OUTPUT->main_content(); ?>
                     </section>
-                    <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
                 </div>
+                <?php echo $OUTPUT->essential_fel_blocks('side-pre', 'span4 desktop-first-column'); ?>
             </div>
-            <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>
         </div>
-    </section>
-
-    <?php echo $OUTPUT->standard_end_of_body_html() ?>
+        <?php echo $OUTPUT->essential_fel_blocks('side-post', 'span3'); ?>
+    </div>
 </div>
+
+<footer>
+    <a href="#top" class="back-to-top" ><span aria-hidden="true" class="fa fa-angle-up "></span></a>
+</footer>
+
+<?php echo $OUTPUT->standard_end_of_body_html(); ?>
 </body>
 </html>
